@@ -30,6 +30,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.stereotype.Component;
 
 import com.fet.telemedicine.backend.chat.exception.ChatException;
+import com.fet.telemedicine.backend.chat.utils.XMPPUtils;
 
 @Component
 @EnableConfigurationProperties(XMPPProperties.class)
@@ -44,12 +45,11 @@ public class XMPPClient {
 	this.xmppProperties = xmppProperties;
 	this.xmppMessageTransmitter = xmppMessageTransmitter;
     }
-
+    
     public Optional<XMPPTCPConnection> connect(String username, String plainTextPassword) {
 	XMPPTCPConnection connection;
 	try {
-	    EntityBareJid entityBareJid;
-	    entityBareJid = JidCreate.entityBareFrom(username + "@" + xmppProperties.getDomain());
+	    EntityBareJid entityBareJid = XMPPUtils.createEntityBareJid(username, xmppProperties.getDomain());
 	    XMPPTCPConnectionConfiguration config = XMPPTCPConnectionConfiguration.builder()
 		    .setHost(xmppProperties.getHost())
 		    .setPort(xmppProperties.getPort())
@@ -103,7 +103,8 @@ public class XMPPClient {
     public void sendMessage(XMPPTCPConnection connection, String message, String to) {
 	ChatManager chatManager = ChatManager.getInstanceFor(connection);
 	try {
-	    Chat chat = chatManager.chatWith(JidCreate.entityBareFrom(to + "@" + xmppProperties.getDomain()));
+	    EntityBareJid entityBareJid = XMPPUtils.createEntityBareJid(to, xmppProperties.getDomain());
+	    Chat chat = chatManager.chatWith(entityBareJid);
 	    chat.send(message);
 	    log.info("Message sent to user '{}' from user '{}'.", to, connection.getUser());
 	} catch (XmppStringprepException | SmackException.NotConnectedException | InterruptedException e) {
