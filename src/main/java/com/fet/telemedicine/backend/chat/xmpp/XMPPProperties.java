@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 /**
  * A connection contains common information needed to connect to an XMPP server and sign in.
  */
-@ConfigurationProperties(prefix = "xmpp")
+@ConfigurationProperties(prefix = "fet.telemedicine.chat.xmpp")
 public class XMPPProperties {
 
   /**
