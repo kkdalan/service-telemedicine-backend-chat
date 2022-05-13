@@ -1,4 +1,4 @@
-package com.fet.telemedicine.backend.chat.im;
+package com.fet.telemedicine.backend.chat.facade;
 
 import com.fet.telemedicine.backend.chat.exception.ChatException;
 import com.fet.telemedicine.backend.chat.facade.impl.XMPPInstantMessenger;
