@@ -1,15 +1,15 @@
-package com.fet.telemedicine.backend.chat.model;
+package com.fet.telemedicine.backend.chat.message.model;
 
 import com.fet.telemedicine.backend.chat.utils.ObjectUtils;
 
-public class WebSocketMessage {
+public class InstantMessage {
 
     String from;
     String to;
     String content;
     MessageType messageType;
 
-    private WebSocketMessage() {
+    private InstantMessage() {
     }
 
     @Override
@@ -50,7 +50,7 @@ public class WebSocketMessage {
     }
 
     public static Builder builder() {
-	return new WebSocketMessage.Builder();
+	return new InstantMessage.Builder();
     }
 
     public static class Builder {
@@ -59,8 +59,8 @@ public class WebSocketMessage {
 	String content;
 	MessageType messageType;
 
-	public WebSocketMessage build() {
-	    WebSocketMessage websocketMessage = new WebSocketMessage();
+	public InstantMessage build() {
+	    InstantMessage websocketMessage = new InstantMessage();
 	    websocketMessage.setFrom(from);
 	    websocketMessage.setTo(to);
 	    websocketMessage.setContent(content);

@@ -1,14 +1,14 @@
 package com.fet.telemedicine.backend.chat.websocket.support;
 
-import com.fet.telemedicine.backend.chat.model.WebSocketMessage;
+import com.fet.telemedicine.backend.chat.message.model.InstantMessage;
 import com.google.gson.Gson;
 
 import javax.websocket.Encoder;
 import javax.websocket.EndpointConfig;
 
-public class WebSocketMessageEncoder implements Encoder.Text<WebSocketMessage> {
+public class InstantMessageEncoder implements Encoder.Text<InstantMessage> {
     @Override
-    public String encode(WebSocketMessage message) {
+    public String encode(InstantMessage message) {
         Gson gson = new Gson();
         return gson.toJson(message);
     }

@@ -1,8 +1,8 @@
-package com.fet.telemedicine.backend.chat.facade;
+package com.fet.telemedicine.backend.chat.message;
 
 import javax.websocket.Session;
 
-import com.fet.telemedicine.backend.chat.model.WebSocketMessage;
+import com.fet.telemedicine.backend.chat.message.model.InstantMessage;
 
 public interface InstantMessenger {
     
@@ -10,7 +10,7 @@ public interface InstantMessenger {
 
     void startSession(Session session, String username, String password);
 
-    void sendMessage(WebSocketMessage message, Session session);
+    void sendMessage(InstantMessage message, Session session);
 
     void disconnect(Session session);
 

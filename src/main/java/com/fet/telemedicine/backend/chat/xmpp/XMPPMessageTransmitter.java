@@ -1,6 +1,6 @@
 package com.fet.telemedicine.backend.chat.xmpp;
 
-import static com.fet.telemedicine.backend.chat.model.MessageType.NEW_MESSAGE;
+import static com.fet.telemedicine.backend.chat.message.model.MessageType.NEW_MESSAGE;
 
 import javax.websocket.Session;
 
@@ -9,18 +9,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.fet.telemedicine.backend.chat.model.WebSocketMessage;
-import com.fet.telemedicine.backend.chat.websocket.support.WebSocketTextMessageHelper;
+import com.fet.telemedicine.backend.chat.message.model.InstantMessage;
+import com.fet.telemedicine.backend.chat.websocket.support.WebSocketMessageHelper;
 
 @Component
 public class XMPPMessageTransmitter {
 
     public static final Logger log = LoggerFactory.getLogger(XMPPMessageTransmitter.class);
 
-    private final WebSocketTextMessageHelper webSocketTextMessageHelper;
+    private final WebSocketMessageHelper webSocketMessageHelper;
 
-    public XMPPMessageTransmitter(WebSocketTextMessageHelper webSocketTextMessageHelper) {
-	this.webSocketTextMessageHelper = webSocketTextMessageHelper;
+    public XMPPMessageTransmitter(WebSocketMessageHelper webSocketMessageHelper) {
+	this.webSocketMessageHelper = webSocketMessageHelper;
     }
 
     public void sendResponse(Message message, Session session) {
@@ -28,7 +28,7 @@ public class XMPPMessageTransmitter {
 	String messageFrom = message.getFrom().getLocalpartOrNull().toString();
 	String to = message.getTo().getLocalpartOrNull().toString();
 	String content = message.getBody();
-	webSocketTextMessageHelper.send(session,
-		WebSocketMessage.builder().from(messageFrom).to(to).content(content).messageType(NEW_MESSAGE).build());
+	webSocketMessageHelper.send(session,
+		InstantMessage.builder().from(messageFrom).to(to).content(content).messageType(NEW_MESSAGE).build());
     }
 }

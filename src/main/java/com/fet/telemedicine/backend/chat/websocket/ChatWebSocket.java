@@ -12,12 +12,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fet.telemedicine.backend.chat.config.SpringContext;
-import com.fet.telemedicine.backend.chat.facade.InstantMessenger;
-import com.fet.telemedicine.backend.chat.model.WebSocketMessage;
-import com.fet.telemedicine.backend.chat.websocket.support.WebSocketMessageDecoder;
-import com.fet.telemedicine.backend.chat.websocket.support.WebSocketMessageEncoder;
+import com.fet.telemedicine.backend.chat.message.InstantMessenger;
+import com.fet.telemedicine.backend.chat.message.model.InstantMessage;
+import com.fet.telemedicine.backend.chat.websocket.support.InstantMessageDecoder;
+import com.fet.telemedicine.backend.chat.websocket.support.InstantMessageEncoder;
 
-@ServerEndpoint(value = "/chat/{username}/{password}", decoders = WebSocketMessageDecoder.class, encoders = WebSocketMessageEncoder.class)
+@ServerEndpoint(value = "/chat/{username}/{password}", decoders = InstantMessageDecoder.class, encoders = InstantMessageEncoder.class)
 public class ChatWebSocket {
 
     public static final Logger log = LoggerFactory.getLogger(ChatWebSocket.class);
@@ -35,7 +35,7 @@ public class ChatWebSocket {
     }
 
     @OnMessage
-    public void handleMessage(WebSocketMessage message, Session session) {
+    public void handleMessage(InstantMessage message, Session session) {
 	instantMessenger.sendMessage(message, session);
     }
 

@@ -1,4 +1,4 @@
-package com.fet.telemedicine.backend.chat.model;
+package com.fet.telemedicine.backend.chat.message.model;
 
 public enum MessageType {
     NEW_MESSAGE,
