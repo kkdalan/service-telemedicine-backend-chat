@@ -9,14 +9,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.fet.telemedicine.backend.chat.model.WebsocketMessage;
+import com.fet.telemedicine.backend.chat.model.WebSocketMessage;
 
 @Component
 public class WebSocketTextMessageHelper {
 
     public static final Logger log = LoggerFactory.getLogger(WebSocketTextMessageHelper.class);
 
-    public void send(Session session, WebsocketMessage websocketMessage) {
+    public void send(Session session, WebSocketMessage websocketMessage) {
 	try {
 	    session.getBasicRemote().sendObject(websocketMessage);
 	} catch (IOException | EncodeException e) {

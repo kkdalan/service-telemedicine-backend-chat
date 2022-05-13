@@ -1,10 +1,10 @@
 package com.fet.telemedicine.backend.chat.im;
 
-import com.fet.telemedicine.backend.chat.im.exception.InstantMessengerException;
-import com.fet.telemedicine.backend.chat.im.impl.XMPPInstantMessenger;
-import com.fet.telemedicine.backend.chat.model.Account;
+import com.fet.telemedicine.backend.chat.exception.ChatException;
+import com.fet.telemedicine.backend.chat.facade.impl.XMPPInstantMessenger;
 import com.fet.telemedicine.backend.chat.model.MessageType;
-import com.fet.telemedicine.backend.chat.model.WebsocketMessage;
+import com.fet.telemedicine.backend.chat.model.WebSocketMessage;
+import com.fet.telemedicine.backend.chat.repository.entity.AccountEntity;
 import com.fet.telemedicine.backend.chat.websocket.support.WebSocketTextMessageHelper;
 import com.fet.telemedicine.backend.chat.xmpp.XMPPClient;
 

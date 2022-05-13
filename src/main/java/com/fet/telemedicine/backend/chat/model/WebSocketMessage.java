@@ -1,14 +1,14 @@
 package com.fet.telemedicine.backend.chat.model;
 
 
-public class WebsocketMessage {
+public class WebSocketMessage {
 
   String from;
   String to;
   String content;
   MessageType messageType;
 
-  private WebsocketMessage() {}
+  private WebSocketMessage() {}
 
   public String getFrom() {
     return from;
@@ -43,7 +43,7 @@ public class WebsocketMessage {
   }
 
   public static Builder builder() {
-    return new WebsocketMessage.Builder();
+    return new WebSocketMessage.Builder();
   }
 
   public static class Builder {
@@ -52,8 +52,8 @@ public class WebsocketMessage {
     String content;
     MessageType messageType;
 
-    public WebsocketMessage build() {
-      WebsocketMessage websocketMessage = new WebsocketMessage();
+    public WebSocketMessage build() {
+      WebSocketMessage websocketMessage = new WebSocketMessage();
       websocketMessage.setFrom(from);
       websocketMessage.setTo(to);
       websocketMessage.setContent(content);

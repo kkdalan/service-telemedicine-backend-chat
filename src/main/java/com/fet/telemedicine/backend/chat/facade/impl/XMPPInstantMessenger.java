@@ -1,4 +1,4 @@
-package com.fet.telemedicine.backend.chat.im.impl;
+package com.fet.telemedicine.backend.chat.facade.impl;
 
 import static com.fet.telemedicine.backend.chat.model.MessageType.ERROR;
 import static com.fet.telemedicine.backend.chat.model.MessageType.FORBIDDEN;
@@ -21,16 +21,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.stereotype.Component;
 
-import com.fet.telemedicine.backend.chat.im.InstantMessenger;
-import com.fet.telemedicine.backend.chat.im.exception.InstantMessengerException;
-import com.fet.telemedicine.backend.chat.model.Account;
-import com.fet.telemedicine.backend.chat.model.WebsocketMessage;
+import com.fet.telemedicine.backend.chat.exception.ChatException;
+import com.fet.telemedicine.backend.chat.facade.InstantMessenger;
+import com.fet.telemedicine.backend.chat.model.WebSocketMessage;
+import com.fet.telemedicine.backend.chat.repository.entity.AccountEntity;
 import com.fet.telemedicine.backend.chat.service.AccountService;
 import com.fet.telemedicine.backend.chat.utils.BCryptUtils;
 import com.fet.telemedicine.backend.chat.websocket.support.WebSocketTextMessageHelper;
 import com.fet.telemedicine.backend.chat.xmpp.XMPPClient;
 
-@Component
+@Component("XMPPInstantMessenger")
 public class XMPPInstantMessenger implements InstantMessenger {
 
     public static final Logger log = LoggerFactory.getLogger(XMPPInstantMessenger.class);
@@ -58,28 +58,28 @@ public class XMPPInstantMessenger implements InstantMessenger {
 	// 3. Return token to client and store it in a cookie or local storage
 	// 4. When starting a websocket session check if the token is still valid and
 	// bypass XMPP authentication
-	Optional<Account> account = accountService.getAccount(username);
+	Optional<AccountEntity> account = accountService.getAccount(username);
 
 	if (account.isPresent() && !BCryptUtils.isMatch(password, account.get().getPassword())) {
 	    log.warn("Invalid password for user {}.", username);
-	    webSocketTextMessageHelper.send(session, WebsocketMessage.builder().messageType(FORBIDDEN).build());
+	    webSocketTextMessageHelper.send(session, WebSocketMessage.builder().messageType(FORBIDDEN).build());
 	    return;
 	}
 
 	Optional<XMPPTCPConnection> connection = xmppClient.connect(username, password);
 
 	if (!connection.isPresent()) {
-	    webSocketTextMessageHelper.send(session, WebsocketMessage.builder().messageType(ERROR).build());
+	    webSocketTextMessageHelper.send(session, WebSocketMessage.builder().messageType(ERROR).build());
 	    return;
 	}
 
 	try {
 	    if (!account.isPresent()) {
 		xmppClient.createAccount(connection.get(), username, password);
-		accountService.saveAccount(new Account(username, BCryptUtils.hash(password)));
+		accountService.saveAccount(new AccountEntity(username, BCryptUtils.hash(password)));
 	    }
 	    xmppClient.login(connection.get());
-	} catch (InstantMessengerException e) {
+	} catch (ChatException e) {
 	    handleXMPPGenericException(session, connection.get(), e);
 	    return;
 	}
@@ -89,11 +89,11 @@ public class XMPPInstantMessenger implements InstantMessenger {
 
 	xmppClient.addIncomingMessageListener(connection.get(), session);
 	webSocketTextMessageHelper.send(session,
-		WebsocketMessage.builder().to(username).messageType(JOIN_SUCCESS).build());
+		WebSocketMessage.builder().to(username).messageType(JOIN_SUCCESS).build());
     }
 
     @Override
-    public void sendMessage(WebsocketMessage message, Session session) {
+    public void sendMessage(WebSocketMessage message, Session session) {
 	XMPPTCPConnection connection = CONNECTIONS.get(session);
 
 	if (connection == null) {
@@ -105,7 +105,7 @@ public class XMPPInstantMessenger implements InstantMessenger {
 	    try {
 		xmppClient.sendMessage(connection, message.getContent(), message.getTo());
 		// TODO: save message for both users in DB
-	    } catch (InstantMessengerException e) {
+	    } catch (ChatException e) {
 		handleXMPPGenericException(session, connection, e);
 	    }
 	    break;
@@ -113,7 +113,7 @@ public class XMPPInstantMessenger implements InstantMessenger {
 	case ADD_CONTACT:
 	    try {
 		xmppClient.addContact(connection, message.getTo());
-	    } catch (InstantMessengerException e) {
+	    } catch (ChatException e) {
 		handleXMPPGenericException(session, connection, e);
 	    }
 	    break;
@@ -121,7 +121,7 @@ public class XMPPInstantMessenger implements InstantMessenger {
 	    Set<RosterEntry> contacts = new HashSet<>();
 	    try {
 		contacts = xmppClient.getContacts(connection);
-	    } catch (InstantMessengerException e) {
+	    } catch (ChatException e) {
 		handleXMPPGenericException(session, connection, e);
 	    }
 
@@ -129,7 +129,7 @@ public class XMPPInstantMessenger implements InstantMessenger {
 	    for (RosterEntry entry : contacts) {
 		jsonArray.put(entry.getName());
 	    }
-	    WebsocketMessage responseMessage = WebsocketMessage.builder()
+	    WebSocketMessage responseMessage = WebSocketMessage.builder()
 		    .content(jsonArray.toString())
 		    .messageType(GET_CONTACTS)
 		    .build();
@@ -152,9 +152,9 @@ public class XMPPInstantMessenger implements InstantMessenger {
 
 	try {
 	    xmppClient.sendStanza(connection, Presence.Type.unavailable);
-	} catch (InstantMessengerException e) {
+	} catch (ChatException e) {
 	    log.error("XMPP error.", e);
-	    webSocketTextMessageHelper.send(session, WebsocketMessage.builder().messageType(ERROR).build());
+	    webSocketTextMessageHelper.send(session, WebSocketMessage.builder().messageType(ERROR).build());
 	}
 
 	xmppClient.disconnect(connection);
@@ -164,7 +164,7 @@ public class XMPPInstantMessenger implements InstantMessenger {
     private void handleXMPPGenericException(Session session, XMPPTCPConnection connection, Exception e) {
 	log.error("XMPP error. Disconnecting and removing session...", e);
 	xmppClient.disconnect(connection);
-	webSocketTextMessageHelper.send(session, WebsocketMessage.builder().messageType(ERROR).build());
+	webSocketTextMessageHelper.send(session, WebSocketMessage.builder().messageType(ERROR).build());
 	CONNECTIONS.remove(session);
     }
 }

@@ -1,18 +1,18 @@
-package com.fet.telemedicine.backend.chat.model;
+package com.fet.telemedicine.backend.chat.repository.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-@Entity
-public class Account {
+@Entity(name = "account")
+public class AccountEntity {
     @Id
     private String username;
     private String password;
 
-    public Account() {
+    public AccountEntity() {
     }
 
-    public Account(String username, String password) {
+    public AccountEntity(String username, String password) {
 	this.username = username;
 	this.password = password;
     }

@@ -1,17 +1,17 @@
 package com.fet.telemedicine.backend.chat.websocket.support;
 
-import com.fet.telemedicine.backend.chat.model.WebsocketMessage;
+import com.fet.telemedicine.backend.chat.model.WebSocketMessage;
 import com.google.gson.Gson;
 
 import javax.websocket.Decoder;
 import javax.websocket.EndpointConfig;
 
-public class WebsocketMessageDecoder implements Decoder.Text<WebsocketMessage> {
+public class WebSocketMessageDecoder implements Decoder.Text<WebSocketMessage> {
 
     @Override
-    public WebsocketMessage decode(String message) {
+    public WebSocketMessage decode(String message) {
         Gson gson = new Gson();
-        return gson.fromJson(message, WebsocketMessage.class);
+        return gson.fromJson(message, WebSocketMessage.class);
     }
 
     @Override

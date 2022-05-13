@@ -1,25 +1,13 @@
 package com.fet.telemedicine.backend.chat.service;
 
 import java.util.Optional;
-import org.springframework.stereotype.Service;
 
-import com.fet.telemedicine.backend.chat.model.Account;
-import com.fet.telemedicine.backend.chat.repository.AccountRepository;
+import com.fet.telemedicine.backend.chat.repository.entity.AccountEntity;
 
-@Service
-public class AccountService {
+public interface AccountService {
 
-    private final AccountRepository accountRepository;
+    Optional<AccountEntity> getAccount(String username);
 
-    public AccountService(AccountRepository accountRepository) {
-	this.accountRepository = accountRepository;
-    }
+    void saveAccount(AccountEntity account);
 
-    public Optional<Account> getAccount(String username) {
-	return accountRepository.findById(username);
-    }
-
-    public void saveAccount(Account account) {
-	accountRepository.save(account);
-    }
 }

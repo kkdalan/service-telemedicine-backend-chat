@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.fet.telemedicine.backend.chat.model.WebsocketMessage;
+import com.fet.telemedicine.backend.chat.model.WebSocketMessage;
 import com.fet.telemedicine.backend.chat.websocket.support.WebSocketTextMessageHelper;
 
 @Component
@@ -29,6 +29,6 @@ public class XMPPMessageTransmitter {
 	String to = message.getTo().getLocalpartOrNull().toString();
 	String content = message.getBody();
 	webSocketTextMessageHelper.send(session,
-		WebsocketMessage.builder().from(messageFrom).to(to).content(content).messageType(NEW_MESSAGE).build());
+		WebSocketMessage.builder().from(messageFrom).to(to).content(content).messageType(NEW_MESSAGE).build());
     }
 }
