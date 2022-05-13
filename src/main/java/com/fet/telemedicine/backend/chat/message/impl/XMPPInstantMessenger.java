@@ -21,16 +21,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.stereotype.Component;
 
+import com.fet.telemedicine.backend.chat.auth.repository.entity.Account;
+import com.fet.telemedicine.backend.chat.auth.service.AccountService;
 import com.fet.telemedicine.backend.chat.exception.MessageException;
 import com.fet.telemedicine.backend.chat.message.InstantMessenger;
 import com.fet.telemedicine.backend.chat.message.model.InstantMessage;
-import com.fet.telemedicine.backend.chat.repository.entity.AccountEntity;
-import com.fet.telemedicine.backend.chat.service.AccountService;
 import com.fet.telemedicine.backend.chat.utils.BCryptUtils;
 import com.fet.telemedicine.backend.chat.websocket.support.WebSocketMessageHelper;
 import com.fet.telemedicine.backend.chat.xmpp.XMPPClient;
 
-@Component("XMPPInstantMessenger")
+@Component(InstantMessenger.XMPP_INSTANT_MESSENGER)
 public class XMPPInstantMessenger implements InstantMessenger {
 
     public static final Logger log = LoggerFactory.getLogger(XMPPInstantMessenger.class);
@@ -59,7 +59,7 @@ public class XMPPInstantMessenger implements InstantMessenger {
 	// 3. Return token to client and store it in a cookie or local storage
 	// 4. When starting a websocket session check if the token is still valid and
 	// bypass XMPP authentication
-	Optional<AccountEntity> account = accountService.getAccount(username);
+	Optional<Account> account = accountService.getAccount(username);
 
 	if (account.isPresent() && !BCryptUtils.isMatch(password, account.get().getPassword())) {
 	    log.warn("Invalid password for user {}.", username);
@@ -77,7 +77,7 @@ public class XMPPInstantMessenger implements InstantMessenger {
 	try {
 	    if (!account.isPresent()) {
 		xmppClient.createAccount(connection.get(), username, password);
-		accountService.saveAccount(new AccountEntity(username, BCryptUtils.hash(password)));
+		accountService.saveAccount(new Account(username, BCryptUtils.hash(password)));
 	    }
 	    xmppClient.login(connection.get());
 	} catch (MessageException e) {
