@@ -26,7 +26,7 @@ import com.fet.telemedicine.backend.chat.model.Account;
 import com.fet.telemedicine.backend.chat.model.WebsocketMessage;
 import com.fet.telemedicine.backend.chat.service.AccountService;
 import com.fet.telemedicine.backend.chat.utils.BCryptUtils;
-import com.fet.telemedicine.backend.chat.websocket.utils.WebSocketTextMessageHelper;
+import com.fet.telemedicine.backend.chat.websocket.support.WebSocketTextMessageHelper;
 import com.fet.telemedicine.backend.chat.xmpp.XMPPClient;
 
 @Component

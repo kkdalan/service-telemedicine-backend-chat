@@ -1,4 +1,4 @@
-package com.fet.telemedicine.backend.chat.websocket.utils;
+package com.fet.telemedicine.backend.chat.websocket.support;
 
 import java.io.IOException;
 

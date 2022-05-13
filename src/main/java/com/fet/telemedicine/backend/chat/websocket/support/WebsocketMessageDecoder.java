@@ -1,4 +1,4 @@
-package com.fet.telemedicine.backend.chat.websocket.utils;
+package com.fet.telemedicine.backend.chat.websocket.support;
 
 import com.fet.telemedicine.backend.chat.model.WebsocketMessage;
 import com.google.gson.Gson;
@@ -6,7 +6,7 @@ import com.google.gson.Gson;
 import javax.websocket.Decoder;
 import javax.websocket.EndpointConfig;
 
-public class MessageDecoder implements Decoder.Text<WebsocketMessage> {
+public class WebsocketMessageDecoder implements Decoder.Text<WebsocketMessage> {
 
     @Override
     public WebsocketMessage decode(String message) {

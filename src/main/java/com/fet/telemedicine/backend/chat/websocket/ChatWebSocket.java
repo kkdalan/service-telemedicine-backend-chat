@@ -14,10 +14,10 @@ import org.slf4j.LoggerFactory;
 import com.fet.telemedicine.backend.chat.config.SpringContext;
 import com.fet.telemedicine.backend.chat.facade.XMPPFacade;
 import com.fet.telemedicine.backend.chat.model.WebsocketMessage;
-import com.fet.telemedicine.backend.chat.websocket.utils.MessageDecoder;
-import com.fet.telemedicine.backend.chat.websocket.utils.MessageEncoder;
+import com.fet.telemedicine.backend.chat.websocket.support.WebsocketMessageDecoder;
+import com.fet.telemedicine.backend.chat.websocket.support.WebsocketMessageEncoder;
 
-@ServerEndpoint(value = "/chat/{username}/{password}", decoders = MessageDecoder.class, encoders = MessageEncoder.class)
+@ServerEndpoint(value = "/chat/{username}/{password}", decoders = WebsocketMessageDecoder.class, encoders = WebsocketMessageEncoder.class)
 public class ChatWebSocket {
 
     public static final Logger log = LoggerFactory.getLogger(ChatWebSocket.class);

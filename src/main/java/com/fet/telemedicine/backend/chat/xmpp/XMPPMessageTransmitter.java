@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.fet.telemedicine.backend.chat.model.WebsocketMessage;
-import com.fet.telemedicine.backend.chat.websocket.utils.WebSocketTextMessageHelper;
+import com.fet.telemedicine.backend.chat.websocket.support.WebSocketTextMessageHelper;
 
 @Component
 public class XMPPMessageTransmitter {

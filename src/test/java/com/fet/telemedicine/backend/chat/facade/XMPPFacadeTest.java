@@ -5,7 +5,7 @@ import com.fet.telemedicine.backend.chat.facade.XMPPFacade;
 import com.fet.telemedicine.backend.chat.model.Account;
 import com.fet.telemedicine.backend.chat.model.MessageType;
 import com.fet.telemedicine.backend.chat.model.WebsocketMessage;
-import com.fet.telemedicine.backend.chat.websocket.utils.WebSocketTextMessageHelper;
+import com.fet.telemedicine.backend.chat.websocket.support.WebSocketTextMessageHelper;
 import com.fet.telemedicine.backend.chat.xmpp.XMPPClient;
 
 import org.jivesoftware.smack.packet.Presence;
