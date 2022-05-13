@@ -1,7 +1,7 @@
-package com.fet.telemedicine.backend.chat.facade;
+package com.fet.telemedicine.backend.chat.im;
 
-import com.fet.telemedicine.backend.chat.exception.XMPPGenericException;
-import com.fet.telemedicine.backend.chat.facade.XMPPFacade;
+import com.fet.telemedicine.backend.chat.im.exception.InstantMessengerException;
+import com.fet.telemedicine.backend.chat.im.impl.XMPPInstantMessenger;
 import com.fet.telemedicine.backend.chat.model.Account;
 import com.fet.telemedicine.backend.chat.model.MessageType;
 import com.fet.telemedicine.backend.chat.model.WebsocketMessage;
@@ -30,7 +30,7 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willThrow;
 
 @ExtendWith(MockitoExtension.class)
-class XMPPFacadeTest {
+class InstantMessagerTest {
 
 //    private static final String USERNAME = "user";
 //    private static final String PASSWORD = "password";

@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fet.telemedicine.backend.chat.config.SpringContext;
-import com.fet.telemedicine.backend.chat.facade.XMPPFacade;
+import com.fet.telemedicine.backend.chat.im.InstantMessenger;
 import com.fet.telemedicine.backend.chat.model.WebsocketMessage;
 import com.fet.telemedicine.backend.chat.websocket.support.WebsocketMessageDecoder;
 import com.fet.telemedicine.backend.chat.websocket.support.WebsocketMessageEncoder;
@@ -22,30 +22,30 @@ public class ChatWebSocket {
 
     public static final Logger log = LoggerFactory.getLogger(ChatWebSocket.class);
   
-    private final XMPPFacade xmppFacade;
+    private final InstantMessenger instantMessenger;
 
     public ChatWebSocket() {
-        this.xmppFacade = (XMPPFacade) SpringContext.getApplicationContext().getBean("XMPPFacade");
+        this.instantMessenger = (InstantMessenger) SpringContext.getApplicationContext().getBean("XMPPFacade");
     }
 
     @OnOpen
     public void open(Session session, @PathParam("username") String username, @PathParam("password") String password) {
-        xmppFacade.startSession(session, username, password);
+        instantMessenger.startSession(session, username, password);
     }
 
     @OnMessage
     public void handleMessage(WebsocketMessage message, Session session) {
-        xmppFacade.sendMessage(message, session);
+        instantMessenger.sendMessage(message, session);
     }
 
     @OnClose
     public void close(Session session) {
-        xmppFacade.disconnect(session);
+        instantMessenger.disconnect(session);
     }
 
     @OnError
     public void onError(Throwable e, Session session) {
         log.debug(e.getMessage());
-        xmppFacade.disconnect(session);
+        instantMessenger.disconnect(session);
     }
 }

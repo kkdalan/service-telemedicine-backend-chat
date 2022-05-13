@@ -13,7 +13,7 @@
 	<artifactId>telemedicine-backend-chat</artifactId>
 	<version>0.1.0</version>
 	<name>telemedicine-backend-chat</name>
-	<description>Telemedicine Backend Chat Server</description>
+	<description>Telemedicine Chat Application</description>
 
 	<properties>
 		<java.version>1.8</java.version>

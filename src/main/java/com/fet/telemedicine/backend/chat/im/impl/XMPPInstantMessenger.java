@@ -1,4 +1,4 @@
-package com.fet.telemedicine.backend.chat.facade;
+package com.fet.telemedicine.backend.chat.im.impl;
 
 import static com.fet.telemedicine.backend.chat.model.MessageType.ERROR;
 import static com.fet.telemedicine.backend.chat.model.MessageType.FORBIDDEN;
@@ -21,7 +21,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.stereotype.Component;
 
-import com.fet.telemedicine.backend.chat.exception.XMPPGenericException;
+import com.fet.telemedicine.backend.chat.im.InstantMessenger;
+import com.fet.telemedicine.backend.chat.im.exception.InstantMessengerException;
 import com.fet.telemedicine.backend.chat.model.Account;
 import com.fet.telemedicine.backend.chat.model.WebsocketMessage;
 import com.fet.telemedicine.backend.chat.service.AccountService;
@@ -30,9 +31,9 @@ import com.fet.telemedicine.backend.chat.websocket.support.WebSocketTextMessageH
 import com.fet.telemedicine.backend.chat.xmpp.XMPPClient;
 
 @Component
-public class XMPPFacade {
+public class XMPPInstantMessenger implements InstantMessenger {
 
-    public static final Logger log = LoggerFactory.getLogger(XMPPFacade.class);
+    public static final Logger log = LoggerFactory.getLogger(XMPPInstantMessenger.class);
 
     private static final Map<Session, XMPPTCPConnection> CONNECTIONS = new HashMap<>();
 
@@ -40,13 +41,15 @@ public class XMPPFacade {
     private final WebSocketTextMessageHelper webSocketTextMessageHelper;
     private final XMPPClient xmppClient;
 
-    public XMPPFacade(AccountService accountService, WebSocketTextMessageHelper webSocketTextMessageHelper,
+    public XMPPInstantMessenger(AccountService accountService, 
+	    WebSocketTextMessageHelper webSocketTextMessageHelper,
 	    XMPPClient xmppClient) {
 	this.accountService = accountService;
 	this.webSocketTextMessageHelper = webSocketTextMessageHelper;
 	this.xmppClient = xmppClient;
     }
 
+    @Override
     public void startSession(Session session, String username, String password) {
 	// TODO: Save user session to avoid having to login again when the websocket
 	// connection is closed
@@ -73,9 +76,10 @@ public class XMPPFacade {
 	try {
 	    if (!account.isPresent()) {
 		xmppClient.createAccount(connection.get(), username, password);
+		accountService.saveAccount(new Account(username, BCryptUtils.hash(password)));
 	    }
 	    xmppClient.login(connection.get());
-	} catch (XMPPGenericException e) {
+	} catch (InstantMessengerException e) {
 	    handleXMPPGenericException(session, connection.get(), e);
 	    return;
 	}
@@ -88,6 +92,7 @@ public class XMPPFacade {
 		WebsocketMessage.builder().to(username).messageType(JOIN_SUCCESS).build());
     }
 
+    @Override
     public void sendMessage(WebsocketMessage message, Session session) {
 	XMPPTCPConnection connection = CONNECTIONS.get(session);
 
@@ -100,7 +105,7 @@ public class XMPPFacade {
 	    try {
 		xmppClient.sendMessage(connection, message.getContent(), message.getTo());
 		// TODO: save message for both users in DB
-	    } catch (XMPPGenericException e) {
+	    } catch (InstantMessengerException e) {
 		handleXMPPGenericException(session, connection, e);
 	    }
 	    break;
@@ -108,7 +113,7 @@ public class XMPPFacade {
 	case ADD_CONTACT:
 	    try {
 		xmppClient.addContact(connection, message.getTo());
-	    } catch (XMPPGenericException e) {
+	    } catch (InstantMessengerException e) {
 		handleXMPPGenericException(session, connection, e);
 	    }
 	    break;
@@ -116,7 +121,7 @@ public class XMPPFacade {
 	    Set<RosterEntry> contacts = new HashSet<>();
 	    try {
 		contacts = xmppClient.getContacts(connection);
-	    } catch (XMPPGenericException e) {
+	    } catch (InstantMessengerException e) {
 		handleXMPPGenericException(session, connection, e);
 	    }
 
@@ -137,6 +142,7 @@ public class XMPPFacade {
 	}
     }
 
+    @Override
     public void disconnect(Session session) {
 	XMPPTCPConnection connection = CONNECTIONS.get(session);
 
@@ -146,7 +152,7 @@ public class XMPPFacade {
 
 	try {
 	    xmppClient.sendStanza(connection, Presence.Type.unavailable);
-	} catch (XMPPGenericException e) {
+	} catch (InstantMessengerException e) {
 	    log.error("XMPP error.", e);
 	    webSocketTextMessageHelper.send(session, WebsocketMessage.builder().messageType(ERROR).build());
 	}
