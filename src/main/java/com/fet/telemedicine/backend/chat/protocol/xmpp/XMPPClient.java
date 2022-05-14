@@ -13,6 +13,7 @@ import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.XMPPException.XMPPErrorException;
 import org.jivesoftware.smack.chat2.Chat;
 import org.jivesoftware.smack.chat2.ChatManager;
+import org.jivesoftware.smack.packet.MessageBuilder;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.PresenceBuilder;
 import org.jivesoftware.smack.roster.Roster;
@@ -75,7 +76,6 @@ public class XMPPClient {
 		    .setResource(jid.getResourceOrEmpty())
 		    .setSendPresence(true)
 		    .build();
-
 	    connection = new XMPPTCPConnection(config);
 	    connection.connect();
 	} catch (SmackException | IOException | XMPPException | InterruptedException e) {

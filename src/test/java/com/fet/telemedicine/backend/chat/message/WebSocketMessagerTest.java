@@ -22,7 +22,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
-import com.fet.telemedicine.backend.chat.auth.repository.entity.Account;
+import com.fet.telemedicine.backend.chat.auth.repository.po.AccountPo;
 import com.fet.telemedicine.backend.chat.auth.service.AccountService;
 import com.fet.telemedicine.backend.chat.exception.MessengerException;
 import com.fet.telemedicine.backend.chat.message.impl.XMPPWebSocketMessenger;

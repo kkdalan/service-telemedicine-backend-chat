@@ -1,0 +1,22 @@
+
+db.createCollection("sequence");
+
+db.sequence.insert({ "_id":"message_id", "sequence_value": 0 });
+db.sequence.insert({ "_id":"group_message_id", "sequence_value": 0 });
+
+// create javascript function
+function getNextSequenceValue(sequenceName){
+   var sequenceDocument = db.sequence.findAndModify({
+      query:{_id: sequenceName },
+      update: {$inc:{sequence_value:1}},
+      new:true
+   });
+   return sequenceDocument.sequence_value;
+}
+
+//EX:
+db.products.insert({
+   "_id":getNextSequenceValue("productid"),
+   "product_name":"Apple iPhone",
+   "category":"mobiles"
+})

@@ -5,6 +5,7 @@ import static com.fet.telemedicine.backend.chat.message.websocket.dto.MessageTyp
 import static com.fet.telemedicine.backend.chat.message.websocket.dto.MessageType.GET_CONTACTS;
 import static com.fet.telemedicine.backend.chat.message.websocket.dto.MessageType.JOIN_SUCCESS;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -20,10 +21,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.stereotype.Component;
 
-import com.fet.telemedicine.backend.chat.auth.repository.entity.Account;
+import com.fet.telemedicine.backend.chat.auth.repository.po.AccountPo;
 import com.fet.telemedicine.backend.chat.auth.service.AccountService;
 import com.fet.telemedicine.backend.chat.exception.MessengerException;
 import com.fet.telemedicine.backend.chat.message.WebSocketMessenger;
+import com.fet.telemedicine.backend.chat.message.repository.po.MessagePo;
+import com.fet.telemedicine.backend.chat.message.service.ChatMessageService;
 import com.fet.telemedicine.backend.chat.message.websocket.dto.WebSocketMessage;
 import com.fet.telemedicine.backend.chat.message.websocket.support.WebSocketMessageHelper;
 import com.fet.telemedicine.backend.chat.protocol.xmpp.XMPPClient;
@@ -40,13 +43,18 @@ public class XMPPWebSocketMessenger implements WebSocketMessenger {
     private final AccountService accountService;
     private final WebSocketMessageHelper webSocketMessageHelper;
     private final XMPPClient xmppClient;
+    private final ChatMessageService chatMessageService;
 
-    public XMPPWebSocketMessenger(AccountService accountService, WebSocketMessageHelper webSocketMessageHelper,
-	    XMPPClient xmppClient) {
+    public XMPPWebSocketMessenger(
+	    AccountService accountService, 
+	    WebSocketMessageHelper webSocketMessageHelper,
+	    XMPPClient xmppClient, 
+	    ChatMessageService chatMessageService) {
 
 	this.accountService = accountService;
 	this.webSocketMessageHelper = webSocketMessageHelper;
 	this.xmppClient = xmppClient;
+	this.chatMessageService = chatMessageService;
     }
 
     @Override
@@ -58,7 +66,7 @@ public class XMPPWebSocketMessenger implements WebSocketMessenger {
 	// 3. Return token to client and store it in a cookie or local storage
 	// 4. When starting a websocket session check if the token is still valid and
 	// bypass XMPP authentication
-	Optional<Account> account = accountService.getAccount(username);
+	Optional<AccountPo> account = accountService.getAccount(username);
 
 	if (account.isPresent() && !BCryptUtils.isMatch(password, account.get().getPassword())) {
 	    log.warn("Invalid password for user {}.", username);
@@ -76,7 +84,7 @@ public class XMPPWebSocketMessenger implements WebSocketMessenger {
 	try {
 	    if (!account.isPresent()) {
 		xmppClient.createAccount(connection.get(), username, password);
-		accountService.saveAccount(new Account(username, BCryptUtils.hash(password)));
+		accountService.saveAccount(new AccountPo(username, BCryptUtils.hash(password)));
 	    }
 	    xmppClient.login(connection.get());
 	} catch (MessengerException e) {
@@ -105,7 +113,15 @@ public class XMPPWebSocketMessenger implements WebSocketMessenger {
 	case NEW_MESSAGE:
 	    try {
 		xmppClient.sendMessage(connection, message.getContent(), message.getTo());
-		// TODO: save message for both users in DB
+		
+		// TODO: save message for both users in DB(mongo)
+		MessagePo messagePo = new MessagePo();
+		messagePo.setContent(message.getContent());
+		messagePo.setCreateAt(new Date());
+//		messagePo.setMessageFrom(messageFrom);
+//		messagePo.setMessageTo(messageTo);
+		chatMessageService.saveMessageToHistory(messagePo);
+		
 	    } catch (MessengerException e) {
 		handleMessageException(session, connection, e);
 	    }
