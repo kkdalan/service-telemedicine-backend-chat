@@ -2,11 +2,11 @@ package com.fet.telemedicine.backend.chat.message;
 
 import com.fet.telemedicine.backend.chat.auth.repository.entity.Account;
 import com.fet.telemedicine.backend.chat.exception.MessageException;
-import com.fet.telemedicine.backend.chat.message.impl.XMPPInstantMessenger;
-import com.fet.telemedicine.backend.chat.message.model.MessageType;
-import com.fet.telemedicine.backend.chat.message.model.InstantMessage;
-import com.fet.telemedicine.backend.chat.websocket.support.WebSocketMessageHelper;
-import com.fet.telemedicine.backend.chat.xmpp.XMPPClient;
+import com.fet.telemedicine.backend.chat.message.impl.XMPPWebSocketMessenger;
+import com.fet.telemedicine.backend.chat.message.websocket.dto.MessageType;
+import com.fet.telemedicine.backend.chat.message.websocket.dto.WebSocketMessage;
+import com.fet.telemedicine.backend.chat.message.websocket.support.WebSocketMessageHelper;
+import com.fet.telemedicine.backend.chat.protocol.xmpp.XMPPClient;
 
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
@@ -22,9 +22,9 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import javax.websocket.Session;
 import java.util.Optional;
 
-import static com.fet.telemedicine.backend.chat.message.model.MessageType.ERROR;
-import static com.fet.telemedicine.backend.chat.message.model.MessageType.FORBIDDEN;
-import static com.fet.telemedicine.backend.chat.message.model.MessageType.JOIN_SUCCESS;
+import static com.fet.telemedicine.backend.chat.message.websocket.dto.MessageType.ERROR;
+import static com.fet.telemedicine.backend.chat.message.websocket.dto.MessageType.FORBIDDEN;
+import static com.fet.telemedicine.backend.chat.message.websocket.dto.MessageType.JOIN_SUCCESS;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willThrow;

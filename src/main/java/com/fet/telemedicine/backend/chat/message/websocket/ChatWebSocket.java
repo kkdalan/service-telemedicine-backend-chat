@@ -1,4 +1,4 @@
-package com.fet.telemedicine.backend.chat.websocket;
+package com.fet.telemedicine.backend.chat.message.websocket;
 
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
@@ -12,21 +12,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fet.telemedicine.backend.chat.config.SpringContext;
-import com.fet.telemedicine.backend.chat.message.InstantMessenger;
-import com.fet.telemedicine.backend.chat.message.model.InstantMessage;
-import com.fet.telemedicine.backend.chat.websocket.support.InstantMessageDecoder;
-import com.fet.telemedicine.backend.chat.websocket.support.InstantMessageEncoder;
+import com.fet.telemedicine.backend.chat.message.WebSocketMessenger;
+import com.fet.telemedicine.backend.chat.message.websocket.dto.WebSocketMessage;
+import com.fet.telemedicine.backend.chat.message.websocket.support.WebSockerMessageDecoder;
+import com.fet.telemedicine.backend.chat.message.websocket.support.WebSocketMessageEncoder;
 
-@ServerEndpoint(value = "/chat/{username}/{password}", decoders = InstantMessageDecoder.class, encoders = InstantMessageEncoder.class)
+@ServerEndpoint(value = "/chat/{username}/{password}", decoders = WebSockerMessageDecoder.class, encoders = WebSocketMessageEncoder.class)
 public class ChatWebSocket {
 
     public static final Logger log = LoggerFactory.getLogger(ChatWebSocket.class);
 
-    private final InstantMessenger instantMessenger;
+    private final WebSocketMessenger instantMessenger;
 
     public ChatWebSocket() {
-	this.instantMessenger = (InstantMessenger) SpringContext.getApplicationContext()
-		.getBean(InstantMessenger.XMPP_INSTANT_MESSENGER);
+	this.instantMessenger = (WebSocketMessenger) SpringContext.getApplicationContext()
+		.getBean(WebSocketMessenger.XMPP_WEB_SOCKET_MESSENGER);
     }
 
     @OnOpen
@@ -35,7 +35,7 @@ public class ChatWebSocket {
     }
 
     @OnMessage
-    public void handleMessage(InstantMessage message, Session session) {
+    public void handleMessage(WebSocketMessage message, Session session) {
 	instantMessenger.sendMessage(message, session);
     }
 

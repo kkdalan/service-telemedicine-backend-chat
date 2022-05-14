@@ -1,4 +1,4 @@
-package com.fet.telemedicine.backend.chat.websocket.support;
+package com.fet.telemedicine.backend.chat.message.websocket.support;
 
 import java.io.IOException;
 
@@ -9,14 +9,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.fet.telemedicine.backend.chat.message.model.InstantMessage;
+import com.fet.telemedicine.backend.chat.message.websocket.dto.WebSocketMessage;
 
 @Component
 public class WebSocketMessageHelper {
 
     public static final Logger log = LoggerFactory.getLogger(WebSocketMessageHelper.class);
 
-    public void send(Session session, InstantMessage websocketMessage) {
+    public void send(Session session, WebSocketMessage websocketMessage) {
 	try {
 	    session.getBasicRemote().sendObject(websocketMessage);
 	} catch (IOException | EncodeException e) {

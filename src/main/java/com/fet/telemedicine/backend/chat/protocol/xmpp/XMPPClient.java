@@ -1,4 +1,4 @@
-package com.fet.telemedicine.backend.chat.xmpp;
+package com.fet.telemedicine.backend.chat.protocol.xmpp;
 
 import java.io.IOException;
 import java.util.Optional;

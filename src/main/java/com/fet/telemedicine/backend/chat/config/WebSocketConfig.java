@@ -7,7 +7,7 @@ import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 
-import com.fet.telemedicine.backend.chat.websocket.ChatWebSocket;
+import com.fet.telemedicine.backend.chat.message.websocket.ChatWebSocket;
 
 @Configuration
 @EnableWebSocket

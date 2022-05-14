@@ -1,13 +1,11 @@
 package com.fet.telemedicine.backend.chat.message.impl;
 
-import static com.fet.telemedicine.backend.chat.message.model.MessageType.ERROR;
-import static com.fet.telemedicine.backend.chat.message.model.MessageType.FORBIDDEN;
-import static com.fet.telemedicine.backend.chat.message.model.MessageType.GET_CONTACTS;
-import static com.fet.telemedicine.backend.chat.message.model.MessageType.JOIN_SUCCESS;
+import static com.fet.telemedicine.backend.chat.message.websocket.dto.MessageType.ERROR;
+import static com.fet.telemedicine.backend.chat.message.websocket.dto.MessageType.FORBIDDEN;
+import static com.fet.telemedicine.backend.chat.message.websocket.dto.MessageType.GET_CONTACTS;
+import static com.fet.telemedicine.backend.chat.message.websocket.dto.MessageType.JOIN_SUCCESS;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -24,24 +22,25 @@ import org.springframework.stereotype.Component;
 import com.fet.telemedicine.backend.chat.auth.repository.entity.Account;
 import com.fet.telemedicine.backend.chat.auth.service.AccountService;
 import com.fet.telemedicine.backend.chat.exception.MessageException;
-import com.fet.telemedicine.backend.chat.message.InstantMessenger;
-import com.fet.telemedicine.backend.chat.message.model.InstantMessage;
+import com.fet.telemedicine.backend.chat.message.WebSocketMessenger;
+import com.fet.telemedicine.backend.chat.message.websocket.dto.WebSocketMessage;
+import com.fet.telemedicine.backend.chat.message.websocket.support.WebSocketMessageHelper;
+import com.fet.telemedicine.backend.chat.protocol.xmpp.XMPPClient;
+import com.fet.telemedicine.backend.chat.protocol.xmpp.XMPPConnectionPool;
 import com.fet.telemedicine.backend.chat.utils.BCryptUtils;
-import com.fet.telemedicine.backend.chat.websocket.support.WebSocketMessageHelper;
-import com.fet.telemedicine.backend.chat.xmpp.XMPPClient;
 
-@Component(InstantMessenger.XMPP_INSTANT_MESSENGER)
-public class XMPPInstantMessenger implements InstantMessenger {
+@Component(WebSocketMessenger.XMPP_WEB_SOCKET_MESSENGER)
+public class XMPPWebSocketMessenger implements WebSocketMessenger {
 
-    public static final Logger log = LoggerFactory.getLogger(XMPPInstantMessenger.class);
+    public static final Logger log = LoggerFactory.getLogger(XMPPWebSocketMessenger.class);
 
-    private static final Map<Session, XMPPTCPConnection> CONNECTIONS = new HashMap<>();
+    private static final XMPPConnectionPool CONNECTIONS = XMPPConnectionPool.create();
 
     private final AccountService accountService;
     private final WebSocketMessageHelper webSocketMessageHelper;
     private final XMPPClient xmppClient;
 
-    public XMPPInstantMessenger(AccountService accountService, 
+    public XMPPWebSocketMessenger(AccountService accountService, 
 	    WebSocketMessageHelper webSocketMessageHelper,
 	    XMPPClient xmppClient) {
 	
@@ -63,14 +62,14 @@ public class XMPPInstantMessenger implements InstantMessenger {
 
 	if (account.isPresent() && !BCryptUtils.isMatch(password, account.get().getPassword())) {
 	    log.warn("Invalid password for user {}.", username);
-	    webSocketMessageHelper.send(session, InstantMessage.builder().messageType(FORBIDDEN).build());
+	    webSocketMessageHelper.send(session, WebSocketMessage.builder().messageType(FORBIDDEN).build());
 	    return;
 	}
 
 	Optional<XMPPTCPConnection> connection = xmppClient.connect(username, password);
 
 	if (!connection.isPresent()) {
-	    webSocketMessageHelper.send(session, InstantMessage.builder().messageType(ERROR).build());
+	    webSocketMessageHelper.send(session, WebSocketMessage.builder().messageType(ERROR).build());
 	    return;
 	}
 
@@ -86,15 +85,16 @@ public class XMPPInstantMessenger implements InstantMessenger {
 	}
 
 	CONNECTIONS.put(session, connection.get());
+	
 	log.info("Session was stored.");
 
 	xmppClient.addIncomingMessageListener(connection.get(), session);
 	webSocketMessageHelper.send(session,
-		InstantMessage.builder().to(username).messageType(JOIN_SUCCESS).build());
+		WebSocketMessage.builder().to(username).messageType(JOIN_SUCCESS).build());
     }
 
     @Override
-    public void sendMessage(InstantMessage message, Session session) {
+    public void sendMessage(WebSocketMessage message, Session session) {
 	XMPPTCPConnection connection = CONNECTIONS.get(session);
 
 	if (connection == null) {
@@ -130,7 +130,7 @@ public class XMPPInstantMessenger implements InstantMessenger {
 	    for (RosterEntry entry : contacts) {
 		jsonArray.put(entry.getName());
 	    }
-	    InstantMessage responseMessage = InstantMessage.builder()
+	    WebSocketMessage responseMessage = WebSocketMessage.builder()
 		    .content(jsonArray.toString())
 		    .messageType(GET_CONTACTS)
 		    .build();
@@ -155,7 +155,7 @@ public class XMPPInstantMessenger implements InstantMessenger {
 	    xmppClient.sendStanza(connection, Presence.Type.unavailable);
 	} catch (MessageException e) {
 	    log.error("XMPP error.", e);
-	    webSocketMessageHelper.send(session, InstantMessage.builder().messageType(ERROR).build());
+	    webSocketMessageHelper.send(session, WebSocketMessage.builder().messageType(ERROR).build());
 	}
 
 	xmppClient.disconnect(connection);
@@ -165,7 +165,7 @@ public class XMPPInstantMessenger implements InstantMessenger {
     private void handleMessageException(Session session, XMPPTCPConnection connection, Exception e) {
 	log.error("XMPP error. Disconnecting and removing session...", e);
 	xmppClient.disconnect(connection);
-	webSocketMessageHelper.send(session, InstantMessage.builder().messageType(ERROR).build());
+	webSocketMessageHelper.send(session, WebSocketMessage.builder().messageType(ERROR).build());
 	CONNECTIONS.remove(session);
     }
 }

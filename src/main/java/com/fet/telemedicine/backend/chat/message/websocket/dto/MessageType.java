@@ -1,4 +1,4 @@
-package com.fet.telemedicine.backend.chat.message.model;
+package com.fet.telemedicine.backend.chat.message.websocket.dto;
 
 public enum MessageType {
     NEW_MESSAGE,
