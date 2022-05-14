@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-import com.fet.telemedicine.backend.chat.exception.MessageException;
+import com.fet.telemedicine.backend.chat.exception.MessengerException;
 import com.fet.telemedicine.backend.chat.utils.XMPPUtils;
 
 @Component
@@ -76,7 +76,7 @@ public class XMPPClient {
 	    accountManager.createAccount(Localpart.from(username), plainTextPassword);
 	} catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
 		| SmackException.NotConnectedException | InterruptedException | XmppStringprepException e) {
-	    throw new MessageException(connection.getUser().toString(), e);
+	    throw new MessengerException(connection.getUser().toString(), e);
 	}
 	log.info("Account for user '{}' created.", username);
     }
@@ -88,7 +88,7 @@ public class XMPPClient {
 	    log.error("Login to XMPP server with user {} failed.", connection.getUser(), e);
 
 	    EntityFullJid user = connection.getUser();
-	    throw new MessageException(user == null ? "unknown" : user.toString(), e);
+	    throw new MessengerException(user == null ? "unknown" : user.toString(), e);
 	}
 	log.info("User '{}' logged in.", connection.getUser());
     }
@@ -108,7 +108,7 @@ public class XMPPClient {
 	    chat.send(message);
 	    log.info("Message sent to user '{}' from user '{}'.", to, connection.getUser());
 	} catch (XmppStringprepException | SmackException.NotConnectedException | InterruptedException e) {
-	    throw new MessageException(connection.getUser().toString(), e);
+	    throw new MessengerException(connection.getUser().toString(), e);
 	}
     }
 
@@ -121,7 +121,7 @@ public class XMPPClient {
 	    } catch (SmackException.NotLoggedInException | SmackException.NotConnectedException
 		    | InterruptedException e) {
 		log.error("XMPP error. Disconnecting and removing session...", e);
-		throw new MessageException(connection.getUser().toString(), e);
+		throw new MessengerException(connection.getUser().toString(), e);
 	    }
 	}
 
@@ -132,7 +132,7 @@ public class XMPPClient {
 	} catch (XmppStringprepException | XMPPException.XMPPErrorException | SmackException.NotConnectedException
 		| SmackException.NoResponseException | SmackException.NotLoggedInException | InterruptedException e) {
 	    log.error("XMPP error. Disconnecting and removing session...", e);
-	    throw new MessageException(connection.getUser().toString(), e);
+	    throw new MessengerException(connection.getUser().toString(), e);
 	}
     }
 
@@ -145,7 +145,7 @@ public class XMPPClient {
 	    } catch (SmackException.NotLoggedInException | SmackException.NotConnectedException
 		    | InterruptedException e) {
 		log.error("XMPP error. Disconnecting and removing session...", e);
-		throw new MessageException(connection.getUser().toString(), e);
+		throw new MessengerException(connection.getUser().toString(), e);
 	    }
 	}
 
@@ -171,7 +171,7 @@ public class XMPPClient {
 	    log.info("Status {} sent for user '{}'.", type, connection.getUser());
 	} catch (SmackException.NotConnectedException | InterruptedException e) {
 	    log.error("XMPP error.", e);
-	    throw new MessageException(connection.getUser().toString(), e);
+	    throw new MessengerException(connection.getUser().toString(), e);
 	}
     }
 }

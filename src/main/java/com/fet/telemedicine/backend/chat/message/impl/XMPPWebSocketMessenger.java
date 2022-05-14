@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 
 import com.fet.telemedicine.backend.chat.auth.repository.entity.Account;
 import com.fet.telemedicine.backend.chat.auth.service.AccountService;
-import com.fet.telemedicine.backend.chat.exception.MessageException;
+import com.fet.telemedicine.backend.chat.exception.MessengerException;
 import com.fet.telemedicine.backend.chat.message.WebSocketMessenger;
 import com.fet.telemedicine.backend.chat.message.websocket.dto.WebSocketMessage;
 import com.fet.telemedicine.backend.chat.message.websocket.support.WebSocketMessageHelper;
@@ -40,10 +40,9 @@ public class XMPPWebSocketMessenger implements WebSocketMessenger {
     private final WebSocketMessageHelper webSocketMessageHelper;
     private final XMPPClient xmppClient;
 
-    public XMPPWebSocketMessenger(AccountService accountService, 
-	    WebSocketMessageHelper webSocketMessageHelper,
+    public XMPPWebSocketMessenger(AccountService accountService, WebSocketMessageHelper webSocketMessageHelper,
 	    XMPPClient xmppClient) {
-	
+
 	this.accountService = accountService;
 	this.webSocketMessageHelper = webSocketMessageHelper;
 	this.xmppClient = xmppClient;
@@ -79,17 +78,17 @@ public class XMPPWebSocketMessenger implements WebSocketMessenger {
 		accountService.saveAccount(new Account(username, BCryptUtils.hash(password)));
 	    }
 	    xmppClient.login(connection.get());
-	} catch (MessageException e) {
+	} catch (MessengerException e) {
 	    handleMessageException(session, connection.get(), e);
 	    return;
 	}
 
 	CONNECTIONS.put(session, connection.get());
-	
+
 	log.info("Session was stored.");
 
 	xmppClient.addIncomingMessageListener(connection.get(), session);
-	webSocketMessageHelper.send(session,
+	webSocketMessageHelper.send(session, 
 		WebSocketMessage.builder().to(username).messageType(JOIN_SUCCESS).build());
     }
 
@@ -106,7 +105,7 @@ public class XMPPWebSocketMessenger implements WebSocketMessenger {
 	    try {
 		xmppClient.sendMessage(connection, message.getContent(), message.getTo());
 		// TODO: save message for both users in DB
-	    } catch (MessageException e) {
+	    } catch (MessengerException e) {
 		handleMessageException(session, connection, e);
 	    }
 	    break;
@@ -114,7 +113,7 @@ public class XMPPWebSocketMessenger implements WebSocketMessenger {
 	case ADD_CONTACT:
 	    try {
 		xmppClient.addContact(connection, message.getTo());
-	    } catch (MessageException e) {
+	    } catch (MessengerException e) {
 		handleMessageException(session, connection, e);
 	    }
 	    break;
@@ -122,7 +121,7 @@ public class XMPPWebSocketMessenger implements WebSocketMessenger {
 	    Set<RosterEntry> contacts = new HashSet<>();
 	    try {
 		contacts = xmppClient.getContacts(connection);
-	    } catch (MessageException e) {
+	    } catch (MessengerException e) {
 		handleMessageException(session, connection, e);
 	    }
 
@@ -130,14 +129,12 @@ public class XMPPWebSocketMessenger implements WebSocketMessenger {
 	    for (RosterEntry entry : contacts) {
 		jsonArray.put(entry.getName());
 	    }
-	    WebSocketMessage responseMessage = WebSocketMessage.builder()
-		    .content(jsonArray.toString())
-		    .messageType(GET_CONTACTS)
-		    .build();
+	    WebSocketMessage responseMessage = WebSocketMessage.builder().content(jsonArray.toString())
+		    .messageType(GET_CONTACTS).build();
 	    log.info("Returning list of contacts {} for user {}.", jsonArray, connection.getUser());
 	    webSocketMessageHelper.send(session, responseMessage);
 	    break;
-	    
+
 	default:
 	    log.warn("Message type not implemented.");
 	}
@@ -153,7 +150,7 @@ public class XMPPWebSocketMessenger implements WebSocketMessenger {
 
 	try {
 	    xmppClient.sendStanza(connection, Presence.Type.unavailable);
-	} catch (MessageException e) {
+	} catch (MessengerException e) {
 	    log.error("XMPP error.", e);
 	    webSocketMessageHelper.send(session, WebSocketMessage.builder().messageType(ERROR).build());
 	}

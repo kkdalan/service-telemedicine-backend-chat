@@ -1,12 +1,15 @@
 package com.fet.telemedicine.backend.chat.message;
 
-import com.fet.telemedicine.backend.chat.auth.repository.entity.Account;
-import com.fet.telemedicine.backend.chat.exception.MessageException;
-import com.fet.telemedicine.backend.chat.message.impl.XMPPWebSocketMessenger;
-import com.fet.telemedicine.backend.chat.message.websocket.dto.MessageType;
-import com.fet.telemedicine.backend.chat.message.websocket.dto.WebSocketMessage;
-import com.fet.telemedicine.backend.chat.message.websocket.support.WebSocketMessageHelper;
-import com.fet.telemedicine.backend.chat.protocol.xmpp.XMPPClient;
+import static com.fet.telemedicine.backend.chat.message.websocket.dto.MessageType.ERROR;
+import static com.fet.telemedicine.backend.chat.message.websocket.dto.MessageType.FORBIDDEN;
+import static com.fet.telemedicine.backend.chat.message.websocket.dto.MessageType.JOIN_SUCCESS;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.willThrow;
+
+import java.util.Optional;
+
+import javax.websocket.Session;
 
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
@@ -19,38 +22,34 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
-import javax.websocket.Session;
-import java.util.Optional;
-
-import static com.fet.telemedicine.backend.chat.message.websocket.dto.MessageType.ERROR;
-import static com.fet.telemedicine.backend.chat.message.websocket.dto.MessageType.FORBIDDEN;
-import static com.fet.telemedicine.backend.chat.message.websocket.dto.MessageType.JOIN_SUCCESS;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
-import static org.mockito.BDDMockito.willThrow;
+import com.fet.telemedicine.backend.chat.auth.repository.entity.Account;
+import com.fet.telemedicine.backend.chat.auth.service.AccountService;
+import com.fet.telemedicine.backend.chat.exception.MessengerException;
+import com.fet.telemedicine.backend.chat.message.impl.XMPPWebSocketMessenger;
+import com.fet.telemedicine.backend.chat.message.websocket.dto.MessageType;
+import com.fet.telemedicine.backend.chat.message.websocket.dto.WebSocketMessage;
+import com.fet.telemedicine.backend.chat.message.websocket.support.WebSocketMessageHelper;
+import com.fet.telemedicine.backend.chat.protocol.xmpp.XMPPClient;
 
 @ExtendWith(MockitoExtension.class)
-class InstantMessagerTest {
+class WebSocketMessagerTest {
 
-//    private static final String USERNAME = "user";
-//    private static final String PASSWORD = "password";
+//    private static final String USERNAME = "alan";
+//    private static final String PASSWORD = "1234";
 //    private static final String MESSAGE = "hello world";
 //    private static final String TO = "other-user";
 //
 //    @Mock
 //    private Session session;
-//
 //    @Mock
 //    private AccountService accountService;
-//
 //    @Mock
-//    private WebSocketTextMessageHelper webSocketTextMessageHelper;
-//
+//    private WebSocketMessageHelper webSocketMessageHelper;
 //    @Mock
 //    private XMPPClient xmppClient;
 //
 //    @InjectMocks
-//    private XMPPFacade xmppFacade;
+//    private XMPPWebSocketMessenger webSocketMessenger;
 //
 //
 //    @Test
@@ -65,15 +64,15 @@ class InstantMessagerTest {
 //        given(xmppClient.connect(USERNAME, PASSWORD)).willReturn(Optional.of(connection));
 //
 //        // WHEN
-//        xmppFacade.startSession(session, USERNAME, PASSWORD);
+//        webSocketMessenger.startSession(session, USERNAME, PASSWORD);
 //
 //        // THEN
 //        then(xmppClient).should().login(connection);
 //        then(xmppClient).should().addIncomingMessageListener(connection, session);
-//        then(webSocketTextMessageHelper).should().send(session, createTextMessage(JOIN_SUCCESS, USERNAME));
+//        thenWebSocketMessageHelperShouldSend(session, createTextMessage(JOIN_SUCCESS, USERNAME));
 //        then(xmppClient).shouldHaveNoMoreInteractions();
 //    }
-//
+//    
 //    @Test
 //    void startSessionShouldStartSessionAndCreateAccountWhenAccountDoesNotExist() throws XmppStringprepException {
 //        // GIVEN
@@ -85,12 +84,12 @@ class InstantMessagerTest {
 //        given(xmppClient.connect(USERNAME, PASSWORD)).willReturn(Optional.of(connection));
 //
 //        // WHEN
-//        xmppFacade.startSession(session, USERNAME, PASSWORD);
+//        webSocketMessenger.startSession(session, USERNAME, PASSWORD);
 //
 //        // THEN
 //        then(xmppClient).should().login(connection);
 //        then(xmppClient).should().addIncomingMessageListener(connection, session);
-//        then(webSocketTextMessageHelper).should().send(session, createTextMessage(JOIN_SUCCESS, USERNAME));
+//        thenWebSocketMessageHelperShouldSend(session, createTextMessage(JOIN_SUCCESS, USERNAME));
 //        then(xmppClient).should().createAccount(connection, USERNAME, PASSWORD);
 //    }
 //
@@ -101,11 +100,11 @@ class InstantMessagerTest {
 //        given(accountService.getAccount(USERNAME)).willReturn(Optional.of(new Account(USERNAME, hashedPassword)));
 //
 //        // WHEN
-//        xmppFacade.startSession(session, USERNAME, PASSWORD);
+//        webSocketMessenger.startSession(session, USERNAME, PASSWORD);
 //
 //        // THEN
 //        then(xmppClient).shouldHaveNoInteractions();
-//        then(webSocketTextMessageHelper).should().send(session, createTextMessage(FORBIDDEN, null));
+//        thenWebSocketMessageHelperShouldSend(session, createTextMessage(FORBIDDEN, null));
 //    }
 //
 //    @Test
@@ -116,15 +115,15 @@ class InstantMessagerTest {
 //        given(xmppClient.connect(USERNAME, PASSWORD)).willReturn(Optional.empty());
 //
 //        // WHEN
-//        xmppFacade.startSession(session, USERNAME, PASSWORD);
+//        webSocketMessenger.startSession(session, USERNAME, PASSWORD);
 //
 //        // THEN
 //        then(xmppClient).shouldHaveNoMoreInteractions();
-//        then(webSocketTextMessageHelper).should().send(session, createTextMessage(ERROR, null));
+//        thenWebSocketMessageHelperShouldSend(session, createTextMessage(ERROR, null));
 //    }
 //
 //    @Test
-//    void startSessionShouldSendErrorMessageWhenLoginThrowsXMPPGenericException() throws XmppStringprepException {
+//    void startSessionShouldSendErrorMessageWhenLoginThrowsMessageException() throws XmppStringprepException {
 //        // GIVEN
 //        XMPPTCPConnectionConfiguration configuration = XMPPTCPConnectionConfiguration.builder()
 //                .setXmppDomain("domain")
@@ -133,21 +132,21 @@ class InstantMessagerTest {
 //        String hashedPassword = BCrypt.hashpw(PASSWORD, BCrypt.gensalt());
 //        given(accountService.getAccount(USERNAME)).willReturn(Optional.of(new Account(USERNAME, hashedPassword)));
 //        given(xmppClient.connect(USERNAME, PASSWORD)).willReturn(Optional.of(connection));
-//        willThrow(XMPPGenericException.class).given(xmppClient).login(connection);
+//        willThrow(MessengerException.class).given(xmppClient).login(connection);
 //
 //        // WHEN
-//        xmppFacade.startSession(session, USERNAME, PASSWORD);
+//        webSocketMessenger.startSession(session, USERNAME, PASSWORD);
 //
 //        // THEN
 //        then(xmppClient).should().disconnect(connection);
-//        then(webSocketTextMessageHelper).should().send(session, createTextMessage(ERROR, null));
+//        thenWebSocketMessageHelperShouldSend(session, createTextMessage(ERROR, null));
 //        then(xmppClient).shouldHaveNoMoreInteractions();
 //    }
 //
 //    @Test
 //    void sendMessageShouldSendMessage() throws XmppStringprepException {
 //        // GIVEN
-//        WebsocketMessage message = WebsocketMessage.builder()
+//        WebSocketMessage message = WebSocketMessage.builder()
 //                .content(MESSAGE)
 //                .to(TO)
 //                .messageType(MessageType.NEW_MESSAGE)
@@ -159,19 +158,19 @@ class InstantMessagerTest {
 //        String hashedPassword = BCrypt.hashpw(PASSWORD, BCrypt.gensalt());
 //        given(accountService.getAccount(USERNAME)).willReturn(Optional.of(new Account(USERNAME, hashedPassword)));
 //        given(xmppClient.connect(USERNAME, PASSWORD)).willReturn(Optional.of(connection));
-//        xmppFacade.startSession(session, USERNAME, PASSWORD);
+//        webSocketMessenger.startSession(session, USERNAME, PASSWORD);
 //
 //        // WHEN
-//        xmppFacade.sendMessage(message, session);
+//        webSocketMessenger.sendMessage(message, session);
 //
 //        // THEN
 //        then(xmppClient).should().sendMessage(connection, MESSAGE, TO);
 //    }
 //
 //    @Test
-//    void sendMessageShouldSendErrorMessageWhenXMPPGenericException() throws XmppStringprepException {
+//    void sendMessageShouldSendErrorMessageWhenMessageException() throws XmppStringprepException {
 //        // GIVEN
-//        WebsocketMessage message = WebsocketMessage.builder()
+//        WebSocketMessage message = WebSocketMessage.builder()
 //                .content(MESSAGE)
 //                .to(TO)
 //                .messageType(MessageType.NEW_MESSAGE)
@@ -183,27 +182,27 @@ class InstantMessagerTest {
 //        String hashedPassword = BCrypt.hashpw(PASSWORD, BCrypt.gensalt());
 //        given(accountService.getAccount(USERNAME)).willReturn(Optional.of(new Account(USERNAME, hashedPassword)));
 //        given(xmppClient.connect(USERNAME, PASSWORD)).willReturn(Optional.of(connection));
-//        xmppFacade.startSession(session, USERNAME, PASSWORD);
-//        willThrow(XMPPGenericException.class).given(xmppClient).sendMessage(connection, MESSAGE, TO);
+//        webSocketMessenger.startSession(session, USERNAME, PASSWORD);
+//        willThrow(MessengerException.class).given(xmppClient).sendMessage(connection, MESSAGE, TO);
 //
 //        // WHEN
-//        xmppFacade.sendMessage(message, session);
+//        webSocketMessenger.sendMessage(message, session);
 //
 //        // THEN
-//        then(webSocketTextMessageHelper).should().send(session, createTextMessage(ERROR, null));
+//        thenWebSocketMessageHelperShouldSend(session, createTextMessage(ERROR, null));
 //    }
 //
 //    @Test
 //    void sendMessageShouldDoNothingWhenNotFoundConnection() {
 //        // GIVEN
-//        WebsocketMessage message = WebsocketMessage.builder()
+//        WebSocketMessage message = WebSocketMessage.builder()
 //                .content(MESSAGE)
 //                .to(TO)
 //                .messageType(MessageType.NEW_MESSAGE)
 //                .build();
 //
 //        // WHEN
-//        xmppFacade.sendMessage(message, session);
+//        webSocketMessenger.sendMessage(message, session);
 //
 //        // THEN
 //        then(xmppClient).shouldHaveNoInteractions();
@@ -219,10 +218,10 @@ class InstantMessagerTest {
 //        String hashedPassword = BCrypt.hashpw(PASSWORD, BCrypt.gensalt());
 //        given(accountService.getAccount(USERNAME)).willReturn(Optional.of(new Account(USERNAME, hashedPassword)));
 //        given(xmppClient.connect(USERNAME, PASSWORD)).willReturn(Optional.of(connection));
-//        xmppFacade.startSession(session, USERNAME, PASSWORD);
+//        webSocketMessenger.startSession(session, USERNAME, PASSWORD);
 //
 //        // WHEN
-//        xmppFacade.disconnect(session);
+//        webSocketMessenger.disconnect(session);
 //
 //        // THEN
 //        then(xmppClient).should().sendStanza(connection, Presence.Type.unavailable);
@@ -230,7 +229,7 @@ class InstantMessagerTest {
 //    }
 //
 //    @Test
-//    void disconnectShouldSendErrorMessageWhenXMPPGenericException() throws XmppStringprepException {
+//    void disconnectShouldSendErrorMessageWhenMessageException() throws XmppStringprepException {
 //        // GIVEN
 //        XMPPTCPConnectionConfiguration configuration = XMPPTCPConnectionConfiguration.builder()
 //                .setXmppDomain("domain")
@@ -239,30 +238,36 @@ class InstantMessagerTest {
 //        String hashedPassword = BCrypt.hashpw(PASSWORD, BCrypt.gensalt());
 //        given(accountService.getAccount(USERNAME)).willReturn(Optional.of(new Account(USERNAME, hashedPassword)));
 //        given(xmppClient.connect(USERNAME, PASSWORD)).willReturn(Optional.of(connection));
-//        xmppFacade.startSession(session, USERNAME, PASSWORD);
-//        willThrow(XMPPGenericException.class).given(xmppClient).sendStanza(connection, Presence.Type.unavailable);
+//        webSocketMessenger.startSession(session, USERNAME, PASSWORD);
+//        willThrow(MessengerException.class).given(xmppClient).sendStanza(connection, Presence.Type.unavailable);
 //
 //
 //        // WHEN
-//        xmppFacade.disconnect(session);
+//        webSocketMessenger.disconnect(session);
 //
 //        // THEN
-//        then(webSocketTextMessageHelper).should().send(session, createTextMessage(ERROR, null));
+//        thenWebSocketMessageHelperShouldSend(session, createTextMessage(ERROR, null));
 //    }
 //
 //    @Test
 //    void disconnectShouldDoNothingWhenNotFoundConnection() {
 //        // WHEN
-//        xmppFacade.disconnect(session);
+//        webSocketMessenger.disconnect(session);
 //
 //        // THEN
 //        then(xmppClient).shouldHaveNoInteractions();
 //    }
-//
-//    private WebsocketMessage createTextMessage(MessageType type, String to) {
-//        return WebsocketMessage.builder()
-//                .to(to)
+//    
+//    //TODO
+//    private void thenWebSocketMessageHelperShouldSend(Session session, WebSocketMessage webSocketMessage) {
+////	then(webSocketMessageHelper).should().send(session, webSocketMessage);
+//    }
+//    
+//    private WebSocketMessage createTextMessage(MessageType type, String to) {
+//        return WebSocketMessage.builder()
 //                .messageType(type)
+//                .to(to)
 //                .build();
 //    }
 }
+

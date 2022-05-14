@@ -16,11 +16,11 @@ public class WebSocketMessageHelper {
 
     public static final Logger log = LoggerFactory.getLogger(WebSocketMessageHelper.class);
 
-    public void send(Session session, WebSocketMessage websocketMessage) {
+    public void send(Session session, WebSocketMessage webSocketMessage) {
 	try {
-	    session.getBasicRemote().sendObject(websocketMessage);
+	    session.getBasicRemote().sendObject(webSocketMessage);
 	} catch (IOException | EncodeException e) {
-	    log.error("WebSocket error, message {} was not sent.", websocketMessage.toString(), e);
+	    log.error("WebSocket error, message {} was not sent.", webSocketMessage.toString(), e);
 	}
     }
 }
