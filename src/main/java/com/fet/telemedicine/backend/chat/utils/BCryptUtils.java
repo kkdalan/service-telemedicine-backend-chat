@@ -16,6 +16,8 @@ public class BCryptUtils {
 	System.out.println(BCryptUtils.hash("0000"));
 	System.out.println(BCryptUtils.hash("imalan"));
 	System.out.println(BCryptUtils.hash("mike"));
+	System.out.println(BCryptUtils.hash("sally"));
+	
     }
     
 }

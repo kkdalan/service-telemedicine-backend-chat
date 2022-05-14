@@ -11,6 +11,7 @@ import java.util.Set;
 
 import javax.websocket.Session;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.roster.RosterEntry;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
@@ -84,7 +85,7 @@ public class XMPPWebSocketMessenger implements WebSocketMessenger {
 	}
 
 	CONNECTIONS.put(session, connection.get());
-
+	
 	log.info("Session was stored.");
 
 	xmppClient.addIncomingMessageListener(connection.get(), session);
@@ -134,7 +135,24 @@ public class XMPPWebSocketMessenger implements WebSocketMessenger {
 	    log.info("Returning list of contacts {} for user {}.", jsonArray, connection.getUser());
 	    webSocketMessageHelper.send(session, responseMessage);
 	    break;
-
+	    
+	case NEW_INSTANCE_ROOM:
+	    try {
+		xmppClient.createInstantRoom(connection, message.getTo());
+	    } catch (MessengerException e) {
+		handleMessageException(session, connection, e);
+	    }
+	    break;
+	    
+	case NEW_RESERVED_ROOM:
+	    try {
+		String[] owners = StringUtils.split(message.getContent(), ",");
+		xmppClient.createReservedRoom(connection, message.getTo(), owners);
+	    } catch (MessengerException e) {
+		handleMessageException(session, connection, e);
+	    }
+	    break;
+	    
 	default:
 	    log.warn("Message type not implemented.");
 	}

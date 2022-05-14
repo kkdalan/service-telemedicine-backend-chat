@@ -7,5 +7,7 @@ public enum MessageType {
     ERROR, 
     FORBIDDEN, 
     ADD_CONTACT, 
-    GET_CONTACTS
+    GET_CONTACTS,
+    NEW_INSTANCE_ROOM,
+    NEW_RESERVED_ROOM,
 }
