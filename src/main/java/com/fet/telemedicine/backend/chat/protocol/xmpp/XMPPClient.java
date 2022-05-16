@@ -115,6 +115,15 @@ public class XMPPClient {
 		(from, message, chat) -> xmppMessageTransmitter.sendResponse(message, webSocketSession));
 	log.info("Incoming message listener for user '{}' added.", connection.getUser());
     }
+    
+//    public void addOutgoingMessageListener(XMPPTCPConnection connection, Session webSocketSession) {
+//   	ChatManager chatManager = ChatManager.getInstanceFor(connection);
+//   	chatManager.addOutgoingListener(
+//   		(to, messageBuilder, chat) -> xmppMessageTransmitter.sendResponse(message, webSocketSession));
+//   	log.info("Outgoing message listener for user '{}' added.", connection.getUser());
+////   	MessageBuilder.buildMessageFrom(message, stanza);
+//   	
+//    }
 
     public void sendMessage(XMPPTCPConnection connection, String message, String to) {
 	ChatManager chatManager = ChatManager.getInstanceFor(connection);

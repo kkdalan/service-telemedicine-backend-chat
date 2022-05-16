@@ -1,7 +1,6 @@
 package com.fet.telemedicine.backend.chat.message.websocket.dto;
 
 public enum MessageType {
-    OLD_MESSAGE,
     NEW_MESSAGE,
     JOIN_SUCCESS, 
     LEAVE, 

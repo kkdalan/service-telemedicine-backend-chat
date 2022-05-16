@@ -13,4 +13,5 @@ public interface MessageRepository extends MongoRepository<MessagePo, BigInteger
 
     List<MessagePo> findByMessageFromAndMessageToOrderByMessageIdAsc(BigInteger messageFrom, BigInteger messageTo);
 
+    List<MessagePo> findByMessageFromOrMessageToOrderByMessageIdAsc(BigInteger messageFrom, BigInteger messageTo);
 }

@@ -20,8 +20,13 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     private MongoSequenceService mongoSequenceService;
 
     @Override
-    public List<MessagePo> findMessageHistory(BigInteger messageFrom, BigInteger messageTo) {
+    public List<MessagePo> searchMessageHistory(BigInteger messageFrom, BigInteger messageTo) {
 	return messageRepository.findByMessageFromAndMessageToOrderByMessageIdAsc(messageFrom, messageTo);
+    }
+
+    @Override
+    public List<MessagePo> searchMessageHistory(BigInteger accountId) {
+	return messageRepository.findByMessageFromOrMessageToOrderByMessageIdAsc(accountId, accountId);
     }
 
     @Override

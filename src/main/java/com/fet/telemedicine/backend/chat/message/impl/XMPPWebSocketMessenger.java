@@ -1,12 +1,12 @@
 package com.fet.telemedicine.backend.chat.message.impl;
 
-import static com.fet.telemedicine.backend.chat.message.websocket.dto.MessageType.ERROR;
-import static com.fet.telemedicine.backend.chat.message.websocket.dto.MessageType.FORBIDDEN;
-import static com.fet.telemedicine.backend.chat.message.websocket.dto.MessageType.GET_CONTACTS;
-import static com.fet.telemedicine.backend.chat.message.websocket.dto.MessageType.JOIN_SUCCESS;
+import static com.fet.telemedicine.backend.chat.message.websocket.dto.MessageType.*;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -27,6 +27,7 @@ import com.fet.telemedicine.backend.chat.exception.MessengerException;
 import com.fet.telemedicine.backend.chat.message.WebSocketMessenger;
 import com.fet.telemedicine.backend.chat.message.repository.po.MessagePo;
 import com.fet.telemedicine.backend.chat.message.service.ChatMessageService;
+import com.fet.telemedicine.backend.chat.message.websocket.dto.MessageType;
 import com.fet.telemedicine.backend.chat.message.websocket.dto.WebSocketMessage;
 import com.fet.telemedicine.backend.chat.message.websocket.support.WebSocketMessageHelper;
 import com.fet.telemedicine.backend.chat.protocol.xmpp.XMPPClient;
@@ -39,7 +40,8 @@ public class XMPPWebSocketMessenger implements WebSocketMessenger {
     public static final Logger log = LoggerFactory.getLogger(XMPPWebSocketMessenger.class);
 
     private static final XMPPConnectionPool CONNECTIONS = XMPPConnectionPool.create();
-
+    private static final Map<String, Session> SESSIONS = new HashMap<>();
+    
     private final AccountService accountService;
     private final WebSocketMessageHelper webSocketMessageHelper;
     private final XMPPClient xmppClient;
@@ -93,14 +95,50 @@ public class XMPPWebSocketMessenger implements WebSocketMessenger {
 	}
 
 	CONNECTIONS.put(session, connection.get());
+	SESSIONS.put(username, session);
 	
 	log.info("Session was stored.");
 
 	xmppClient.addIncomingMessageListener(connection.get(), session);
 	webSocketMessageHelper.send(session, 
 		WebSocketMessage.builder().to(username).messageType(JOIN_SUCCESS).build());
+	
+//	loadHistory(username, session);
     }
-
+    
+    private void loadHistory(String username, Session session) {
+	XMPPTCPConnection connection = CONNECTIONS.get(session);
+	
+	 // TODO fetch from Redis
+	Optional<AccountPo> currAccount = accountService.getAccount(username);
+	List<MessagePo> oldMessages = chatMessageService.searchMessageHistory(currAccount.get().getId());
+	
+	for (MessagePo oldMsg : oldMessages) {
+	    // TODO fetch from Redis
+	    Optional<AccountPo> fromAccount = accountService.getAccount(oldMsg.getMessageFrom());
+	    Optional<AccountPo> toAccount = accountService.getAccount(oldMsg.getMessageTo());
+	    String fromUsername = fromAccount.get().getUsername();
+	    String toUsername = toAccount.get().getUsername();
+	    
+//	    if (username.equals(fromUsername)) {
+//		Session fromSession = SESSIONS.get(fromUsername);
+//		WebSocketMessage oldMessage = WebSocketMessage.builder()
+//			.from(fromUsername).to(toUsername).content(oldMsg.getContent())
+//			.messageType(NEW_MESSAGE).build();
+//		log.info("Loading message sent from user '{}' to user '{}'.", fromUsername, toUsername);
+//		webSocketMessageHelper.send(fromSession, oldMessage);
+//	    }
+	    if (username.equals(toUsername)) {
+		Session toSession = SESSIONS.get(toUsername);
+		WebSocketMessage oldMessage = WebSocketMessage.builder()
+			.from(toUsername).to(fromUsername).content(oldMsg.getContent())
+			.messageType(NEW_MESSAGE).build();
+		log.info("Loading message sent from user '{}' to user '{}'.", fromUsername, toUsername);
+		webSocketMessageHelper.send(toSession, oldMessage);
+	    }
+	}
+    }
+    
     @Override
     public void sendMessage(WebSocketMessage message, Session session) {
 	XMPPTCPConnection connection = CONNECTIONS.get(session);
@@ -116,9 +154,8 @@ public class XMPPWebSocketMessenger implements WebSocketMessenger {
 		
 		// TODO: save message for both users in DB(mongo)
 		MessagePo messagePo = new MessagePo();
-		
-		Optional<AccountPo> fromAccount = accountService.getAccount(message.getFrom());
-		Optional<AccountPo> toAccount = accountService.getAccount(message.getTo());
+		Optional<AccountPo> fromAccount = accountService.getAccount(message.getFrom()); // TODO fetch from Redis
+		Optional<AccountPo> toAccount = accountService.getAccount(message.getTo()); // TODO fetch from Redis
 		messagePo.setMessageFrom(fromAccount.get().getId());
 		messagePo.setMessageTo(toAccount.get().getId());
 		
@@ -204,4 +241,5 @@ public class XMPPWebSocketMessenger implements WebSocketMessenger {
 	webSocketMessageHelper.send(session, WebSocketMessage.builder().messageType(ERROR).build());
 	CONNECTIONS.remove(session);
     }
+
 }
