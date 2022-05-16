@@ -3,19 +3,29 @@ package com.fet.telemedicine.backend.chat.message.repository.po;
 import java.math.BigInteger;
 import java.util.Date;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "message")
 public class MessagePo {
     @Id
+    private ObjectId id;
     private BigInteger messageId;
     private BigInteger messageFrom;
     private BigInteger messageTo;
     private String content;
     private Date createAt;
-    
+
     public MessagePo() {
+    }
+
+    public ObjectId getId() {
+	return id;
+    }
+
+    public void setId(ObjectId id) {
+	this.id = id;
     }
 
     public BigInteger getMessageId() {

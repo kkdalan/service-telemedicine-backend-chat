@@ -26,8 +26,14 @@ public class ChatMessageServiceImpl implements ChatMessageService {
 
     @Override
     public void saveMessageToHistory(MessagePo messagePo) {
-	messagePo.setMessageId(mongoSequenceService.getNextSequenceValue("message"));
-	messageRepository.save(messagePo);
+	try {
+	    BigInteger newMessageId = mongoSequenceService.getNextSequenceValue("message_id");
+	    messagePo.setMessageId(newMessageId);
+	    messageRepository.save(messagePo);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}
+
     }
 
 }
