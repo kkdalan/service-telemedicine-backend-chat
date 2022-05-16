@@ -116,10 +116,15 @@ public class XMPPWebSocketMessenger implements WebSocketMessenger {
 		
 		// TODO: save message for both users in DB(mongo)
 		MessagePo messagePo = new MessagePo();
+		
+		Optional<AccountPo> fromAccount = accountService.getAccount(message.getFrom());
+		Optional<AccountPo> toAccount = accountService.getAccount(message.getTo());
+		messagePo.setMessageFrom(fromAccount.get().getId());
+		messagePo.setMessageTo(toAccount.get().getId());
+		
 		messagePo.setContent(message.getContent());
 		messagePo.setCreateAt(new Date());
-//		messagePo.setMessageFrom(messageFrom);
-//		messagePo.setMessageTo(messageTo);
+		
 		chatMessageService.saveMessageToHistory(messagePo);
 		
 	    } catch (MessengerException e) {

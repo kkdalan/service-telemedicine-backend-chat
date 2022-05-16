@@ -2,9 +2,10 @@ CREATE DATABASE smarthealth;
 USE smarthealth;
 
 CREATE TABLE account (
+  id                    bigint(20)       NOT NULL AUTO_INCREMENT,
   username              VARCHAR(255)     NOT NULL,
   password              VARCHAR(255)     NOT NULL,
-  PRIMARY KEY (username),
+  PRIMARY KEY (id),
   INDEX account_username_idx (username)
 );
 

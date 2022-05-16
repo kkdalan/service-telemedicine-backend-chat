@@ -1,6 +1,9 @@
 package com.fet.telemedicine.backend.chat.auth.service.impl;
 
+import java.util.List;
 import java.util.Optional;
+
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import com.fet.telemedicine.backend.chat.auth.repository.AccountRepository;
@@ -18,7 +21,16 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Optional<AccountPo> getAccount(String username) {
-	return accountRepository.findById(username);
+	List<AccountPo> accounts = accountRepository.findByUsername(username);
+	if (CollectionUtils.isEmpty(accounts)) {
+	    return Optional.empty();
+	} else {
+	    if (accounts.size() == 1) {
+		return Optional.of(accounts.get(0));
+	    } else {
+		throw new RuntimeException("Duplicate users with username: " + username);
+	    }
+	}
     }
 
     @Override
