@@ -27,12 +27,11 @@ import com.fet.telemedicine.backend.chat.exception.MessengerException;
 import com.fet.telemedicine.backend.chat.message.WebSocketMessenger;
 import com.fet.telemedicine.backend.chat.message.repository.po.MessagePo;
 import com.fet.telemedicine.backend.chat.message.service.ChatMessageService;
-import com.fet.telemedicine.backend.chat.message.websocket.dto.MessageType;
 import com.fet.telemedicine.backend.chat.message.websocket.dto.WebSocketMessage;
 import com.fet.telemedicine.backend.chat.message.websocket.support.WebSocketMessageHelper;
 import com.fet.telemedicine.backend.chat.protocol.xmpp.XMPPClient;
 import com.fet.telemedicine.backend.chat.protocol.xmpp.XMPPConnectionPool;
-import com.fet.telemedicine.backend.chat.utils.BCryptUtils;
+import com.fet.telemedicine.backend.chat.util.BCryptUtil;
 
 @Component(WebSocketMessenger.XMPP_WEB_SOCKET_MESSENGER)
 public class XMPPWebSocketMessenger implements WebSocketMessenger {
@@ -70,7 +69,7 @@ public class XMPPWebSocketMessenger implements WebSocketMessenger {
 	// bypass XMPP authentication
 	Optional<AccountPo> account = accountService.getAccount(username);
 
-	if (account.isPresent() && !BCryptUtils.isMatch(password, account.get().getPassword())) {
+	if (account.isPresent() && !BCryptUtil.isMatch(password, account.get().getPassword())) {
 	    log.warn("Invalid password for user {}.", username);
 	    webSocketMessageHelper.send(session, WebSocketMessage.builder().messageType(FORBIDDEN).build());
 	    return;
@@ -86,7 +85,7 @@ public class XMPPWebSocketMessenger implements WebSocketMessenger {
 	try {
 	    if (!account.isPresent()) {
 		xmppClient.createAccount(connection.get(), username, password);
-		accountService.saveAccount(new AccountPo(username, BCryptUtils.hash(password)));
+		accountService.saveAccount(new AccountPo(username, BCryptUtil.hash(password)));
 	    }
 	    xmppClient.login(connection.get());
 	} catch (MessengerException e) {

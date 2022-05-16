@@ -1,8 +1,8 @@
-package com.fet.telemedicine.backend.chat.utils;
+package com.fet.telemedicine.backend.chat.util;
 
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
-public class BCryptUtils {
+public class BCryptUtil {
 
     public static String hash(String plainTextPassword){
         return BCrypt.hashpw(plainTextPassword, BCrypt.gensalt());
@@ -13,10 +13,10 @@ public class BCryptUtils {
     }
     
     public static void main(String[] args) {
-	System.out.println(BCryptUtils.hash("0000"));
-	System.out.println(BCryptUtils.hash("imalan"));
-	System.out.println(BCryptUtils.hash("mike"));
-	System.out.println(BCryptUtils.hash("sally"));
+	System.out.println(BCryptUtil.hash("0000"));
+	System.out.println(BCryptUtil.hash("imalan"));
+	System.out.println(BCryptUtil.hash("mike"));
+	System.out.println(BCryptUtil.hash("sally"));
 	
     }
     

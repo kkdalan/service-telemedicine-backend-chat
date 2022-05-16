@@ -1,4 +1,4 @@
-package com.fet.telemedicine.backend.chat.utils;
+package com.fet.telemedicine.backend.chat.util;
 
 import org.jivesoftware.smack.util.StringUtils;
 import org.jxmpp.jid.EntityBareJid;
@@ -7,7 +7,7 @@ import org.jxmpp.jid.parts.Localpart;
 import org.jxmpp.stringprep.XmppStringprepException;
 import org.jxmpp.util.XmppStringUtils;
 
-public class XMPPUtils {
+public class XMPPUtil {
 
     public static EntityBareJid createJidForUser(String username, String xmppDomain) throws XmppStringprepException {
 	return JidCreate.entityBareFrom(username + "@" + xmppDomain);

@@ -1,6 +1,6 @@
 package com.fet.telemedicine.backend.chat.message.websocket.dto;
 
-import com.fet.telemedicine.backend.chat.utils.ObjectUtils;
+import com.fet.telemedicine.backend.chat.util.ObjectUtil;
 
 public class WebSocketMessage {
 
@@ -14,7 +14,7 @@ public class WebSocketMessage {
 
     @Override
     public String toString() {
-	return ObjectUtils.reflectToString(this);
+	return ObjectUtil.reflectToString(this);
     }
 
     public String getFrom() {

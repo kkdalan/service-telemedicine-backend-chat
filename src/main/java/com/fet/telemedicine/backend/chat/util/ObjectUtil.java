@@ -1,8 +1,8 @@
-package com.fet.telemedicine.backend.chat.utils;
+package com.fet.telemedicine.backend.chat.util;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-public class ObjectUtils {
+public class ObjectUtil {
 
     public static String reflectToString(Object object) {
 	return ToStringBuilder.reflectionToString(object);

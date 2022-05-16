@@ -47,7 +47,7 @@ import com.fet.telemedicine.backend.chat.message.listener.DefaultPresenceEventLi
 import com.fet.telemedicine.backend.chat.message.listener.DefaultRosterListener;
 import com.fet.telemedicine.backend.chat.message.listener.DefaultRosterLoadedListener;
 import com.fet.telemedicine.backend.chat.message.listener.DefaultSubscribeListener;
-import com.fet.telemedicine.backend.chat.utils.XMPPUtils;
+import com.fet.telemedicine.backend.chat.util.XMPPUtil;
 
 @Component
 @EnableConfigurationProperties(XMPPProperties.class)
@@ -66,7 +66,7 @@ public class XMPPClient {
     public Optional<XMPPTCPConnection> connect(String username, String plainTextPassword) {
 	XMPPTCPConnection connection;
 	try {
-	    EntityBareJid jid = XMPPUtils.createJidForUser(username, xmppProperties.getDomain());
+	    EntityBareJid jid = XMPPUtil.createJidForUser(username, xmppProperties.getDomain());
 	    XMPPTCPConnectionConfiguration config = XMPPTCPConnectionConfiguration.builder()
 		    .setHost(xmppProperties.getHost())
 		    .setPort(xmppProperties.getPort())
@@ -128,7 +128,7 @@ public class XMPPClient {
     public void sendMessage(XMPPTCPConnection connection, String message, String to) {
 	ChatManager chatManager = ChatManager.getInstanceFor(connection);
 	try {
-	    EntityBareJid jid = XMPPUtils.createJidForUser(to, xmppProperties.getDomain());
+	    EntityBareJid jid = XMPPUtil.createJidForUser(to, xmppProperties.getDomain());
 	    Chat chat = chatManager.chatWith(jid);
 	    chat.send(message);
 	    log.info("Message sent to user '{}' from user '{}'.", to, connection.getUser());
@@ -140,7 +140,7 @@ public class XMPPClient {
     public void createInstantRoom(XMPPTCPConnection connection, String roomName) {
 	MultiUserChatManager chatManager = MultiUserChatManager.getInstanceFor(connection);
 	try {
-	    EntityBareJid jid = XMPPUtils.createJidForRoom(roomName, xmppProperties.getDomain());
+	    EntityBareJid jid = XMPPUtil.createJidForRoom(roomName, xmppProperties.getDomain());
 	    MultiUserChat muc = chatManager.getMultiUserChat(jid);
 	    Resourcepart room = Resourcepart.from(roomName);
 	    muc.create(room).makeInstant();
@@ -155,7 +155,7 @@ public class XMPPClient {
     public void createReservedRoom(XMPPTCPConnection connection, String roomName, String[] owners) {
    	MultiUserChatManager chatManager = MultiUserChatManager.getInstanceFor(connection);
    	try {
-   	    EntityBareJid jid = XMPPUtils.createJidForRoom(roomName, xmppProperties.getDomain());
+   	    EntityBareJid jid = XMPPUtil.createJidForRoom(roomName, xmppProperties.getDomain());
    	    MultiUserChat muc = chatManager.getMultiUserChat(jid);
    	    Resourcepart room = Resourcepart.from(roomName);
    	   
