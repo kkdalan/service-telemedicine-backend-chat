@@ -34,49 +34,49 @@ public class RedisController {
     @RequestMapping(value = "/simpleTest", method = RequestMethod.GET)
     @ResponseBody
     public HttpResult<AccountPo> simpleTest() {
-	List<AccountPo> brandList = accountService.listAll();
-	AccountPo brand = brandList.get(0);
-	String key = "redis:simple:" + brand.getId();
-	redisService.set(key, brand);
-	AccountPo cacheBrand = (AccountPo) redisService.get(key);
-	return HttpResult.success(cacheBrand);
+	List<AccountPo> accountList = accountService.listAll();
+	AccountPo account = accountList.get(0);
+	String key = "redis:simple:" + account.getId();
+	redisService.set(key, account);
+	AccountPo cacheAccount = (AccountPo) redisService.get(key);
+	return HttpResult.success(cacheAccount);
     }
 
     @ApiOperation("測試Hash結構的快取")
     @RequestMapping(value = "/hashTest", method = RequestMethod.GET)
     @ResponseBody
     public HttpResult<AccountPo> hashTest() {
-	List<AccountPo> brandList = accountService.listAll();
-	AccountPo brand = brandList.get(0);
-	String key = "redis:hash:" + brand.getId();
-	Map<String, Object> value = BeanUtil.beanToMap(brand);
+	List<AccountPo> accountList = accountService.listAll();
+	AccountPo account = accountList.get(0);
+	String key = "redis:hash:" + account.getId();
+	Map<String, Object> value = BeanUtil.beanToMap(account);
 	redisService.hSetAll(key, value);
 	Map<Object, Object> cacheValue = redisService.hGetAll(key);
-	AccountPo cacheBrand = BeanUtil.mapToBean(cacheValue, AccountPo.class);
-	return HttpResult.success(cacheBrand);
+	AccountPo cacheAccount = BeanUtil.mapToBean(cacheValue, AccountPo.class);
+	return HttpResult.success(cacheAccount);
     }
 
     @ApiOperation("測試Set結構的快取")
     @RequestMapping(value = "/setTest", method = RequestMethod.GET)
     @ResponseBody
     public HttpResult<Set<Object>> setTest() {
-	List<AccountPo> brandList = accountService.listAll();
+	List<AccountPo> accountList = accountService.listAll();
 	String key = "redis:set:all";
-	redisService.sAdd(key, (Object[]) ArrayUtil.toArray(brandList, AccountPo.class));
-	redisService.sRemove(key, brandList.get(0));
-	Set<Object> cachedBrandList = redisService.sMembers(key);
-	return HttpResult.success(cachedBrandList);
+	redisService.sAdd(key, (Object[]) ArrayUtil.toArray(accountList, AccountPo.class));
+	redisService.sRemove(key, accountList.get(0));
+	Set<Object> cachedAccountList = redisService.sMembers(key);
+	return HttpResult.success(cachedAccountList);
     }
 
     @ApiOperation("測試List結構的快取")
     @RequestMapping(value = "/listTest", method = RequestMethod.GET)
     @ResponseBody
     public HttpResult<List<Object>> listTest() {
-	List<AccountPo> brandList = accountService.listAll();
+	List<AccountPo> accountList = accountService.listAll();
 	String key = "redis:list:all";
-	redisService.lPushAll(key, (Object[]) ArrayUtil.toArray(brandList, AccountPo.class));
-	redisService.lRemove(key, 1, brandList.get(0));
-	List<Object> cachedBrandList = redisService.lRange(key, 0, 3);
-	return HttpResult.success(cachedBrandList);
+	redisService.lPushAll(key, (Object[]) ArrayUtil.toArray(accountList, AccountPo.class));
+	redisService.lRemove(key, 1, accountList.get(0));
+	List<Object> cachedAccountList = redisService.lRange(key, 0, 3);
+	return HttpResult.success(cachedAccountList);
     }
 }
