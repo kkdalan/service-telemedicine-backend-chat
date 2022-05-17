@@ -14,6 +14,10 @@ public interface AccountService {
 
     void saveAccount(AccountPo account);
     
-    List<AccountPo> listAll();
+    List<AccountPo> getAllAccounts();
+    
+    void clearAllCache();
+    
+    void clear(BigInteger accountId);
     
 }

@@ -34,7 +34,7 @@ public class RedisController {
     @RequestMapping(value = "/simpleTest", method = RequestMethod.GET)
     @ResponseBody
     public HttpResult<AccountPo> simpleTest() {
-	List<AccountPo> accountList = accountService.listAll();
+	List<AccountPo> accountList = accountService.getAllAccounts();
 	AccountPo account = accountList.get(0);
 	String key = "redis:simple:" + account.getId();
 	redisService.set(key, account);
@@ -46,7 +46,7 @@ public class RedisController {
     @RequestMapping(value = "/hashTest", method = RequestMethod.GET)
     @ResponseBody
     public HttpResult<AccountPo> hashTest() {
-	List<AccountPo> accountList = accountService.listAll();
+	List<AccountPo> accountList = accountService.getAllAccounts();
 	AccountPo account = accountList.get(0);
 	String key = "redis:hash:" + account.getId();
 	Map<String, Object> value = BeanUtil.beanToMap(account);
@@ -60,7 +60,7 @@ public class RedisController {
     @RequestMapping(value = "/setTest", method = RequestMethod.GET)
     @ResponseBody
     public HttpResult<Set<Object>> setTest() {
-	List<AccountPo> accountList = accountService.listAll();
+	List<AccountPo> accountList = accountService.getAllAccounts();
 	String key = "redis:set:all";
 	redisService.sAdd(key, (Object[]) ArrayUtil.toArray(accountList, AccountPo.class));
 	redisService.sRemove(key, accountList.get(0));
@@ -72,7 +72,7 @@ public class RedisController {
     @RequestMapping(value = "/listTest", method = RequestMethod.GET)
     @ResponseBody
     public HttpResult<List<Object>> listTest() {
-	List<AccountPo> accountList = accountService.listAll();
+	List<AccountPo> accountList = accountService.getAllAccounts();
 	String key = "redis:list:all";
 	redisService.lPushAll(key, (Object[]) ArrayUtil.toArray(accountList, AccountPo.class));
 	redisService.lRemove(key, 1, accountList.get(0));

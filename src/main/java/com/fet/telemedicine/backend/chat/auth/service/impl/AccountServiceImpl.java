@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -16,11 +17,13 @@ import com.fet.telemedicine.backend.chat.auth.service.AccountService;
 import com.fet.telemedicine.backend.chat.config.RedisConfig;
 
 @Service
+@CacheConfig(cacheNames = "accountService")
 public class AccountServiceImpl implements AccountService {
 
     @Autowired
     private AccountRepository accountRepository;
 
+    @Cacheable(value = RedisConfig.REDIS_KEY_DATABASE, key = "#username", unless = "#result == null")
     @Override
     public Optional<AccountPo> getAccount(String username) {
 	List<AccountPo> accounts = accountRepository.findByUsername(username);
@@ -34,23 +37,38 @@ public class AccountServiceImpl implements AccountService {
 	    }
 	}
     }
-    
-    @Cacheable(value = RedisConfig.REDIS_KEY_DATABASE, key = "'pms:brand:'+#id", unless = "#result==null")
+
+    @Cacheable(value = RedisConfig.REDIS_KEY_DATABASE, key = "#accountId", unless = "#result == null")
     @Override
     public Optional<AccountPo> getAccount(BigInteger accountId) {
 	return accountRepository.findById(accountId);
     }
 
-    @CacheEvict(value = RedisConfig.REDIS_KEY_DATABASE, key = "'pms:brand:'+#id")
     @Override
     public void saveAccount(AccountPo account) {
 	accountRepository.save(account);
     }
 
+    @Cacheable(value = RedisConfig.REDIS_KEY_DATABASE, keyGenerator = RedisConfig.CACHE_KEY_GENERATOR)
     @Override
-    public List<AccountPo> listAll() {
+    public List<AccountPo> getAllAccounts() {
 	return accountRepository.findAll();
     }
 
-  
+    /**
+     * 執行時,將清除value = getAllUsers cache 【cacheNames = "userService"】 也可指定清除的key
+     * 【@CacheEvict(value="abc")】
+     */
+    @CacheEvict(value = RedisConfig.REDIS_KEY_DATABASE, allEntries = true)
+    @Override
+    public void clearAllCache() {
+    }
+
+    @CacheEvict(value = RedisConfig.REDIS_KEY_DATABASE, key = "#accountId")
+    @Override
+    public void clear(BigInteger accountId) {
+	// TODO Auto-generated method stub
+
+    }
+
 }
