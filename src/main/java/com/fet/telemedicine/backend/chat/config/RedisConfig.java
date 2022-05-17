@@ -67,11 +67,11 @@ public class RedisConfig extends CachingConfigurerSupport {
     public KeyGenerator cacheKeyGenerator() {
         return (target, method, params) -> {
             StringBuilder sb = new StringBuilder();
-            sb.append(target.getClass().getName());
-            sb.append(method.getName());
-            for (Object obj : params) {
+            sb.append(target.getClass().getName()).append(":");
+            sb.append(method.getName()).append(":");
+            for (Object param : params) {
             	// 由於引數可能不同, hashCode肯定不一樣, 快取的key也需要不一樣
-                sb.append(JsonUtil.toJson(obj).hashCode());
+                sb.append(JsonUtil.toJson(param).hashCode());
             }
             return sb.toString();
         };

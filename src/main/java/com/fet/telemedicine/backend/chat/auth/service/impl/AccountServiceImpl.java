@@ -17,13 +17,14 @@ import com.fet.telemedicine.backend.chat.auth.service.AccountService;
 import com.fet.telemedicine.backend.chat.config.RedisConfig;
 
 @Service
-@CacheConfig(cacheNames = "accountService")
+@CacheConfig(cacheNames = "account")
 public class AccountServiceImpl implements AccountService {
 
     @Autowired
     private AccountRepository accountRepository;
 
-    @Cacheable(value = RedisConfig.REDIS_KEY_DATABASE, key = "#username", unless = "#result == null")
+//    @Cacheable(key = "#username", unless = "#result == null")
+    @Cacheable(keyGenerator = RedisConfig.CACHE_KEY_GENERATOR)
     @Override
     public Optional<AccountPo> getAccount(String username) {
 	List<AccountPo> accounts = accountRepository.findByUsername(username);
@@ -38,7 +39,7 @@ public class AccountServiceImpl implements AccountService {
 	}
     }
 
-    @Cacheable(value = RedisConfig.REDIS_KEY_DATABASE, key = "#accountId", unless = "#result == null")
+    @Cacheable(key = "#accountId", unless = "#result == null")
     @Override
     public Optional<AccountPo> getAccount(BigInteger accountId) {
 	return accountRepository.findById(accountId);
@@ -49,7 +50,7 @@ public class AccountServiceImpl implements AccountService {
 	accountRepository.save(account);
     }
 
-    @Cacheable(value = RedisConfig.REDIS_KEY_DATABASE, keyGenerator = RedisConfig.CACHE_KEY_GENERATOR)
+    @Cacheable(keyGenerator = RedisConfig.CACHE_KEY_GENERATOR)
     @Override
     public List<AccountPo> getAllAccounts() {
 	return accountRepository.findAll();
@@ -59,12 +60,12 @@ public class AccountServiceImpl implements AccountService {
      * 執行時,將清除value = getAllUsers cache 【cacheNames = "userService"】 也可指定清除的key
      * 【@CacheEvict(value="abc")】
      */
-    @CacheEvict(value = RedisConfig.REDIS_KEY_DATABASE, allEntries = true)
+    @CacheEvict(allEntries = true)
     @Override
     public void clearAllCache() {
     }
 
-    @CacheEvict(value = RedisConfig.REDIS_KEY_DATABASE, key = "#accountId")
+    @CacheEvict(key = "#accountId")
     @Override
     public void clear(BigInteger accountId) {
 	// TODO Auto-generated method stub
