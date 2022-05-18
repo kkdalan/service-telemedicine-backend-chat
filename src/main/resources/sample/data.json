@@ -1,0 +1,150 @@
+{
+	"_id": "5f5b3863e7e51a0011c76cfe",
+	"role": [
+		128
+	],
+	"isReceiveNotification": true,
+	"isInMeeting": false,
+	"serviceGroupId": [
+		"5f5b40fee7e51a0011c76d20"
+	],
+	"apnToken": [
+		"bebcfa4122c50d7d41e1e01d169002a37a448787dd88874ede207d1d0cd7d608"
+	],
+	"fcmToken": [],
+	"accountId": {
+		"_id": "5f5b3863f91414fbd720b129",
+		"account": "yltch999",
+		"createTime": "2020-09-11T08:42:11.886Z",
+		"modifyTime": "2021-04-06T05:02:03.053Z",
+		"valid": true
+	},
+	"name": "玉里慈濟醫院",
+	"companyId": "5f5b37a8e7e51a0011c76cfb",
+	"department": null,
+	"departmentCode": null,
+	"hospital": "玉里慈濟醫院",
+	"hospitalCode": "1145030012",
+	"modifyTime": "2022-01-20T16:12:15.551Z",
+	"createTime": "2020-09-11T08:42:11.900Z",
+	"currentVidyoPin": "0",
+	"currentVidyoRoomUrl": "0",
+	"meetingNumber": "0",
+	"appName": "doctorAPP",
+	"platform": "iOS",
+	"version": "2.2.2(3)",
+	"isConnectNote": "1"
+},
+{
+"_id": "5f5b3ec9e7e51a0011c76d16",
+"role": [
+128
+],
+"isReceiveNotification": true,
+"isInMeeting": false,
+"serviceGroupId": [
+"5f5b40fee7e51a0011c76d20"
+],
+"apnToken": [
+"8b2832c5b1c17a6dee418db5fb2da2cefa446f60a0ab749b297cf6f7363dc154",
+"51c4a3522f5f256f4411a03ecbbeec5ba8e946a0b146e6621f42c74ccc700251"
+],
+"fcmToken": [],
+"accountId": {
+"_id": "5f5b3ec9f91414fbd720d3f4",
+"account": "flvh999",
+"createTime": "2020-09-11T09:09:29.423Z",
+"modifyTime": "2020-09-11T09:09:29.423Z",
+"valid": true
+},
+"name": "鳳榮",
+"companyId": "5f5b3a68e7e51a0011c76d03",
+"department": null,
+"departmentCode": null,
+"hospital": "臺北榮民總醫院鳳林分院",
+"hospitalCode": "0645020015",
+"modifyTime": "2022-01-20T16:04:39.746Z",
+"createTime": "2020-09-11T09:09:29.436Z",
+"currentVidyoPin": "0",
+"currentVidyoRoomUrl": "0",
+"meetingNumber": "0",
+"appName": "doctorAPP",
+"platform": "iOS",
+"version": "2.2.0(3)",
+"isConnectNote": "1"
+},
+{
+"_id": "5f5b3f37e7e51a0011c76d1a",
+"role": [
+128
+],
+"isReceiveNotification": true,
+"isInMeeting": false,
+"serviceGroupId": [
+"5f5b40fee7e51a0011c76d20"
+],
+"apnToken": [
+"136e14ce3a86307f6bfe06fdea1cef3b6191c7657287d5fa241e321c797e27f2",
+"4d970b4413dbc71e92f7ae590369cdd37f8770b91b5acccb581f8497933759f4"
+],
+"fcmToken": [],
+"accountId": {
+"_id": "5f5b3863f91414fbd720b129",
+"account": "yltch999",
+"createTime": "2020-09-11T08:42:11.886Z",
+"modifyTime": "2021-04-06T05:02:03.053Z",
+"valid": true
+},
+"name": "玉榮",
+"companyId": "5f5b3daee7e51a0011c76d0d",
+"department": null,
+"departmentCode": null,
+"hospital": "臺北榮民總醫院玉里分院",
+"hospitalCode": "0645030011",
+"modifyTime": "2022-01-20T16:49:04.656Z",
+"createTime": "2020-09-11T09:11:19.998Z",
+"currentVidyoPin": "0",
+"currentVidyoRoomUrl": "0",
+"meetingNumber": "0",
+"appName": "doctorAPP",
+"platform": "iOS",
+"version": "2.2.0(3)",
+"isConnectNote": "1"
+},
+{
+"_id": "5f5b47a9e7e51a0011c76d40",
+"role": [
+128
+],
+"isReceiveNotification": true,
+"isInMeeting": false,
+"serviceGroupId": [
+"5f5b40fee7e51a0011c76d20"
+],
+"apnToken": [
+"25b7cd692f6978ce440995bbf37c062923b07c6fb4093086852ba4b26863bd6c"
+],
+"fcmToken": [],
+"accountId": {
+"_id": "5f5b47a9f91414fbd7212816",
+"account": "htch07999",
+"createTime": "2020-09-11T09:47:21.143Z",
+"modifyTime": "2022-01-21T07:22:49.713Z",
+"valid": true
+},
+"name": "小兒科",
+"companyId": "5e03232d6c2eaff1afddfd4d",
+"department": "小兒科",
+"departmentCode": "0705",
+"hospital": "花蓮慈濟",
+"hospitalCode": "1145010010",
+"modifyTime": "2022-03-17T05:59:11.541Z",
+"createTime": "2020-09-11T09:47:21.157Z",
+"currentVidyoPin": "0",
+"currentVidyoRoomUrl": "0",
+"meetingNumber": "0",
+"appName": "doctorAPP",
+"platform": "iOS",
+"version": "2.3.0(1)",
+"meetingStartTime": "2022-03-17T05:51:55.510Z"
+},]
