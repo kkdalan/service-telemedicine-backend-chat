@@ -1,0 +1,36 @@
+參考網址:
+https://codertw.com/%E4%BC%BA%E6%9C%8D%E5%99%A8/170225/
+
+
+// 執行命令，建立一個叫my_zookeeper的容器，預設埠2181
+docker run --name spring_zookeeper -d zookeeper:latest
+
+// 檢視容器狀態，執行命令
+// 看到  binding to port 0.0.0.0/0.0.0.0:2181  說明啟動成功了。
+docker logs -f my_zookeeper
+
+// 執行命令：啟動一個映象並執行zkCli.sh命令，命令的引數是-server zookeeper
+// 將我們之前啟動my_zookeeper 容器連線到我們新建的這個容器上, 並將其主機名命名為 zookeeper
+docker run -it --rm --link spring_zookeeper:zookeeper zookeeper zkCli.sh -server zookeeper
+
+// 如果出現訊息:
+// the input device is not a TTY.  If you are using mintty, try prefixing the command with 'winpty'
+// 執行命令：
+winpty docker run -it --rm --link spring_zookeeper:zookeeper zookeeper zkCli.sh -server zookeeper
+
+// 最後顯示：[zk: zookeeper(CONNECTED) 0]
+
+// 啟動ZooKeeper群集
+// project name = zookeeper
+docker-compose -p zookeeper -f docker-compose-zk.yml up
+
+// 查看網路狀態
+docker netowrk ls 
+
+// 使用docker連線zookeeper叢集：zoo1、zoo2、zoo3分別是上面建立的叢集的三個主機名
+// -–net後接的就是上一步顯示結果中的  zookeeper_default bridge
+winpty docker run -it --rm --link zoo1:zk1 --link zoo2:zk2 --link zoo3:zk3 --net zookeeper_default zookeeper zkCli.sh -server zk1:2181,zk2:2182,zk3:2183
+
+
+
+
