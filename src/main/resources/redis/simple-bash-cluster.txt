@@ -3,8 +3,11 @@ $ docker run -itd --name redis-master -p 6379:6379 redis:latest
 $ docker run -itd --name redis-slave1 -p 6380:6380 redis:latest
 $ docker run -itd --name redis-slave2 -p 6381:6381 redis:latest
 
-// 移除container by name
-$ docker rm <CONTAINER_NAME>
+// 移除container
+$ docker kill <CONTAINER_ID>; docker rm <CONTAINER_NAME>;
+
+// 查詢全部 container
+$ docker ls -a
 
 // 查看 IPAddress: 172.17.0.5
 $ docker inspect redis-master

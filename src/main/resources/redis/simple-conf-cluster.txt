@@ -1,0 +1,110 @@
+// 建立  redis 容器 (master/slave1) & 設定主從(利用設定檔)
+$ docker run -itd --name redis-master -p 6379:6379 redis:latest
+FIXME:
+$ docker run -itd --name redis-slave1 -v C://Users/alanhuang/eclipse-workspace/service-telemedicine-backend-chat/src/main/resources/redis/config:/redis-config:rw -p 6380:6380 redis:latest redis-server redis-config/redis-slave1.conf
+ 
+ 
+// 進入容器查看主從分配
+(linux)   docker exec -it redis-master /bin/bash
+(windows) winpty docker exec -it redis-master //bin/bash
+
+
+// 查看 IPAddress: 172.17.0.5
+$ docker inspect redis-master
+
+// 查看 IPAddress: 172.17.0.6
+$ docker inspect redis-slave1
+
+// 查看 IPAddress: 172.17.0.7
+$ docker inspect redis-slave2
+
+
+// 進入容器查看主從分配
+(linux)   docker exec -it redis-master /bin/bash
+(windows) winpty docker exec -it redis-master //bin/bash
+
+[redis-master]
+$ winpty docker exec -it redis-master //bin/bash
+root@bd73365fa9f0:/data# redis-cli
+127.0.0.1:6379> info replication
+# Replication
+role:master
+connected_slaves:0
+
+[redis-slave1]
+$ winpty docker exec -it redis-slave1 //bin/bash
+root@47e093f9a91b:/data# redis-cli
+127.0.0.1:6379> info replication
+# Replication
+role:master
+connected_slaves:0
+
+[redis-slave2]
+$ winpty docker exec -it redis-slave2 //bin/bash
+root@98309d711c78:/data# redis-cli
+127.0.0.1:6379> info replication
+# Replication
+role:master
+connected_slaves:0
+
+
+// 設定主從(利用設定檔)
+[redis-slave1] 127.0.0.1:6379> slaveof 172.17.0.5 6379
+[redis-slave2] 127.0.0.1:6379> slaveof 172.17.0.5 6379
+
+// 確認主從狀態
+[redis-slave1]
+root@47e093f9a91b:/data# redis-cli
+127.0.0.1:6379> info replication
+# Replication
+role:slave
+master_host:172.17.0.5
+master_port:6379
+
+[redis-slave2]
+127.0.0.1:6379> info replication
+# Replication
+role:slave
+master_host:172.17.0.5
+master_port:6379
+
+[redis-master]
+127.0.0.1:6379> info replication
+# Replication
+role:master
+connected_slaves:2
+slave0:ip=172.17.0.6,port=6379,state=online,offset=644,lag=0
+slave1:ip=172.17.0.7,port=6379,state=online,offset=644,lag=0
+
+
+//測試一主兩從同步效果
+
+[redis-slave1]
+127.0.0.1:6379> get name
+(nil)
+
+[redis-slave2]
+127.0.0.1:6379> get name
+(nil)
+
+[redis-master]
+127.0.0.1:6379> set name Alan
+OK
+127.0.0.1:6379> get name
+"Alan"
+127.0.0.1:6379>
+
+[redis-slave1]
+127.0.0.1:6379> get name
+"Alan"
+
+[redis-slave2]
+127.0.0.1:6379> get name
+"Alan"
+
+
+
+
+
+
+
