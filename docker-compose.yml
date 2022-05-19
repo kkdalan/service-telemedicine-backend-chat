@@ -21,23 +21,29 @@ services:
 #      MYSQL_PASSWORD: 0000
 #      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
 #      
-  spring-mongo:
-    container_name: spring-mongo
-    image: mongo:4.1
-    ports:
-      - 27017:27017
-    environment:
-#      ME_CONFIG_MONGODB_ADMINUSERNAME: root
-#      ME_CONFIG_MONGODB_ADMINPASSWORD: 0000
-      ME_CONFIG_MONGODB_URL: mongodb://localhost:27017
+
+#  spring-mongo:
+#    container_name: spring-mongo
+#    image: mongo:4.1
+#    ports:
+#      - 27017:27017
+#    environment:
+##      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+##      ME_CONFIG_MONGODB_ADMINPASSWORD: 0000
+#      ME_CONFIG_MONGODB_URL: mongodb://localhost:27017
     
     
+# [進入容器] winpty docker exec -it spring-redis //bin/bash
   spring-redis:   
-    container_name: spring-redis                  
-    image: redis:5.0.5-alpine       
+    container_name: spring-redis      
+    restart: always            
+    image: redis:latest
     ports:
-      - '6379:6379'
-    restart: always
+      - 6379:6379
+    volumes:
+      - /c/Users/alanhuang/eclipse-workspace/service-telemedicine-backend-chat/src/main/resources/redis/conf/:/usr/local/etc/redis/conf
+    command: ["redis-server","/usr/local/etc/redis/conf/redis.conf"]
+    
     
 #  openfire-mysql:
 #    container_name: openfire-mysql
