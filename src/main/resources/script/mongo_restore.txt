@@ -1,0 +1,80 @@
+ 連入 mongo 容器:
+(linux) docker exec -it spring-mongo /bin/bash
+(windows) winpty docker exec -it spring-mongo //bin/bash
+
+ --------------------------------------------------------------------------------------------------------- 
+ 參考網址:
+https://davejansen.com/how-to-dump-restore-a-mongodb-database-from-a-docker-container/
+
+ 
+  spring-mongo:
+    container_name: spring-mongo
+#    restart: always
+    image: mongo:4.1
+    ports:
+      - "27017:27017"
+    environment:
+      ME_CONFIG_MONGODB_URL: mongodb://localhost:27017
+#      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+#      ME_CONFIG_MONGODB_ADMINPASSWORD: 0000
+    volumes:
+       - ./src/main/resources/mongo/:/usr/local/etc/mongo/    <=  We have link the local folder 
+                                                                  to docker inner folder, so we 
+                                                                  don't need docker copy commands.
+ ---------------------------------------------------------------------------------------------------------     
+0. Enter mongodb container 
+winpty docker exec -it spring-mongo //bin/bash
+
+----[ Backup ]----
+1. Create a database dump
+❯ docker exec -i <container_name> /usr/bin/mongodump --username <username> --password <password> --authenticationDatabase admin --db <database_name> --out /dump
+❯ docker cp <container_name>:/dump ~/Downloads/dump <= we don't need!
+
+example:
+
+./usr/bin/mongodump --db <DATABASE_TO_BACKUP> --out <DATABASE_DUMP_FOLDER>
+
+root@11bd75567483:/# ./usr/bin/mongodump --db smarthealth --out /usr/local/etc/mongo/backup
+2022-05-20T08:06:48.295+0000    writing smarthealth.message to
+2022-05-20T08:06:48.295+0000    writing smarthealth.sequence to
+2022-05-20T08:06:48.299+0000    done dumping smarthealth.message (1 document)
+2022-05-20T08:06:48.301+0000    done dumping smarthealth.sequence (1 document)
+
+
+
+----[ Restoring ]----
+0. Ensure a user is created first
+
+use admin
+
+db.createUser({
+    user: "username",
+	pwd: passwordPrompt(),
+	roles:[{role: "readWrite" , db:"<database_name>"}]})
+
+
+
+1. Copy dump files to container
+❯ docker cp ~/Downloads/dump <container_name>:/dump   <= we don't need!
+
+2. Restore
+❯ docker exec -i <container_name> /usr/bin/mongorestore --username <username> --password <password> --authenticationDatabase admin --db <database_name> /dump/<database_name>
+
+example:
+
+./usr/bin/mongorestore --db <DATABASE_TO_RESTORE> <DATABASE_DUMP_FOLDER>
+
+root@11bd75567483:/# ./usr/bin/mongorestore --db smarthealth /usr/local/etc/mongo/backup/smarthealth
+2022-05-20T08:25:40.729+0000    the --db and --collection args should only be used when restoring from a BSON file. Other uses are deprecated and
+ will not exist in the future; use --nsInclude instead
+2022-05-20T08:25:40.731+0000    building a list of collections to restore from /usr/local/etc/mongo/backup/smarthealth dir
+2022-05-20T08:25:40.741+0000    reading metadata for smarthealth.message from /usr/local/etc/mongo/backup/smarthealth/message.metadata.json
+2022-05-20T08:25:40.741+0000    reading metadata for smarthealth.sequence from /usr/local/etc/mongo/backup/smarthealth/sequence.metadata.json
+2022-05-20T08:25:40.766+0000    restoring smarthealth.sequence from /usr/local/etc/mongo/backup/smarthealth/sequence.bson
+2022-05-20T08:25:40.788+0000    restoring smarthealth.message from /usr/local/etc/mongo/backup/smarthealth/message.bson
+2022-05-20T08:25:40.789+0000    no indexes to restore
+2022-05-20T08:25:40.790+0000    finished restoring smarthealth.sequence (1 document, 0 failures)
+2022-05-20T08:25:40.790+0000    no indexes to restore
+2022-05-20T08:25:40.791+0000    finished restoring smarthealth.message (1 document, 0 failures)
+2022-05-20T08:25:40.791+0000    2 document(s) restored successfully. 0 document(s) failed to restore.
+

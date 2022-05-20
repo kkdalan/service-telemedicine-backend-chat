@@ -1,15 +1,15 @@
+ 連入 Openfire 容器:
+(linux) docker exec -it openfire /bin/bash
+(windows) winpty docker exec -it openfire //bin/bash
+
+--< setup >----------------------------------------------
 參考網址:
 https://www.796t.com/p/1121218.html
 
---< setup >----------------------------------------------
 *** openfire setup連結 ***
   
   http://localhost:9090/setup/index.jsp
   PS: 須清除cookie重新進入此頁設定
-
- 連入 Openfire 容器:
-(linux) docker exec -it openfire /bin/bash
-(windows) winpty docker exec -it openfire //bin/bash
 ---------------------------------------------------------
 1. Language Selection:
 - English

@@ -1,0 +1,1 @@
+{"options":{},"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_","ns":"smarthealth.message"}],"uuid":"5162fc69dc2a447eaad24d1fc16a3862"}

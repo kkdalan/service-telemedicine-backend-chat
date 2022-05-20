@@ -1,0 +1,1 @@
+{"options":{},"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_","ns":"smarthealth.sequence"}],"uuid":"789f3078cf204390b2cbaad0429f00dc"}
