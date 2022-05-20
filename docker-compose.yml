@@ -1,5 +1,7 @@
 services:
 
+# [進入容器] winpty docker exec -it <CONTAINER_NAME> //bin/bash
+
   spring-mysql:
     container_name: spring-mysql
 #    restart: always
@@ -21,8 +23,6 @@ services:
 #      ME_CONFIG_MONGODB_ADMINUSERNAME: root
 #      ME_CONFIG_MONGODB_ADMINPASSWORD: 0000
     
-    
-# [進入容器] winpty docker exec -it spring-redis //bin/bash
   spring-redis:   
     container_name: spring-redis      
 #    restart: always
@@ -30,7 +30,7 @@ services:
     ports:
       - "6379:6379"
     volumes:
-      - /c/Users/alanhuang/eclipse-workspace/service-telemedicine-backend-chat/src/main/resources/redis/conf/:/usr/local/etc/redis/conf
+       - ./src/main/resources/redis/conf/:/usr/local/etc/redis/conf
     command: ["redis-server","/usr/local/etc/redis/conf/redis.conf"]
     
     
@@ -52,7 +52,7 @@ services:
 # windows 利用 netstat -a 看看port是否有被佔用
   openfire:
     container_name: openfire
-#    restart: always
+    restart: always
     image: quantumobject/docker-openfire
     ports:
       - "9090:9090"
