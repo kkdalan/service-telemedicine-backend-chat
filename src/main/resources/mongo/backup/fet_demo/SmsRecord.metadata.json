@@ -1,0 +1,1 @@
+{"options":{},"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_","ns":"fet_demo.SmsRecord"},{"v":{"$numberInt":"2"},"key":{"phoneNO":{"$numberInt":"1"}},"name":"phoneNO_1","ns":"fet_demo.SmsRecord","background":true}],"uuid":"5ace27b3b29a48cdb858d473dd6b25fb"}

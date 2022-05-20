@@ -1,0 +1,1 @@
+{"options":{},"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_","ns":"fet_demo.AppUpdate"},{"v":{"$numberInt":"2"},"key":{"companyId":{"$numberInt":"1"}},"name":"companyId_1","ns":"fet_demo.AppUpdate","background":true}],"uuid":"b58abdf53d1143358061e9d5a4dafad9"}
