@@ -17,7 +17,7 @@ https://davejansen.com/how-to-dump-restore-a-mongodb-database-from-a-docker-cont
 #      ME_CONFIG_MONGODB_ADMINUSERNAME: root
 #      ME_CONFIG_MONGODB_ADMINPASSWORD: 0000
     volumes:
-       - ./src/main/resources/mongo/:/usr/local/etc/mongo/    <=  We have link the local folder 
+       - ./src/main/resources/mongo/:/usr/local/etc/mongo/    <=  We have linked the local folder 
                                                                   to docker inner folder, so we 
                                                                   don't need docker copy commands.
  ---------------------------------------------------------------------------------------------------------  
