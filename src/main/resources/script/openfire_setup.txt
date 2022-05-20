@@ -1,0 +1,42 @@
+參考網址:
+https://www.796t.com/p/1121218.html
+
+--< setup >----------------------------------------------
+*** openfire setup連結 ***
+  
+  http://localhost:9090/setup/index.jsp
+  PS: 須清除cookie重新進入此頁設定
+
+ 連入 Openfire 容器:
+(linux) docker exec -it openfire /bin/bash
+(windows) winpty docker exec -it openfire //bin/bash
+---------------------------------------------------------
+1. Language Selection:
+- English
+
+2. Server Settings:
+- XMPP Domain Name: smarthealth
+- Server Host Name (FQDN): smarthealth
+
+3. Database Settings:
+  * check => docker inspect openfire        => ip: 172.21.0.6
+  * check => docker inspect openfire-mysql  => ip: 172.21.0.4
+  
+- Standard Database Connection
+- Database Driver Presets: MySQL
+- JDBC Driver Class: com.mysql.cj.jdbc.Driver
+- Database URL: jdbc:mysql://172.21.0.4:3307/openfire?rewriteBatchedStatements=true&characterEncoding=UTF-8&characterSetResults=UTF-8&serverTimezone=UTC
+                            (docker inner ip)
+- Username: openfireuser
+- Password: openfirepasswd
+
+4. Profile Settings: Default
+5. Administrator Account
+- Admin Email Address: admin@example.com
+- New Password: admin
+- Confirm Password:	admin
+
+6. Setup Complete!
+
+7. create 4 users for openfire (optional) 
+

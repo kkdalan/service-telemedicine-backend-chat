@@ -13,8 +13,8 @@ public class BCryptUtil {
     }
 
     public static void main(String[] args) {
-	System.out.println(BCryptUtil.hash("0000"));
-	System.out.println(BCryptUtil.hash("imalan"));
+	System.out.println(BCryptUtil.hash("admin"));
+	System.out.println(BCryptUtil.hash("alan"));
 	System.out.println(BCryptUtil.hash("mike"));
 	System.out.println(BCryptUtil.hash("sally"));
 

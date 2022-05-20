@@ -1,73 +1,71 @@
 services:
 
-#  xmpp-server:
-#    container_name: spring-xmpp-websocket-server
-#    image: smartinrub/spring-xmpp-websocket-server
-#    ports:
-#      - "8080:8080"
-#    depends_on:
-#      - spring-mysql
-#      - spring-mongo
-#      - openfire
-#      
-#  spring-mysql:
-#    container_name: spring-mysql
-#    image: mysql/mysql-server:latest
-#    ports:
-#      - "3306:3306"
-#    environment:
-#      MYSQL_DATABASE: smarthealth
-#      MYSQL_USER: root
-#      MYSQL_PASSWORD: 0000
-#      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
-#      
+  spring-mysql:
+    container_name: spring-mysql
+#    restart: always
+    image: mysql:latest
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: smarthealth
+      MYSQL_ROOT_PASSWORD: root
 
-#  spring-mongo:
-#    container_name: spring-mongo
-#    image: mongo:4.1
-#    ports:
-#      - 27017:27017
-#    environment:
-##      ME_CONFIG_MONGODB_ADMINUSERNAME: root
-##      ME_CONFIG_MONGODB_ADMINPASSWORD: 0000
-#      ME_CONFIG_MONGODB_URL: mongodb://localhost:27017
+  spring-mongo:
+    container_name: spring-mongo
+#    restart: always
+    image: mongo:4.1
+    ports:
+      - "27017:27017"
+    environment:
+      ME_CONFIG_MONGODB_URL: mongodb://localhost:27017
+#      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+#      ME_CONFIG_MONGODB_ADMINPASSWORD: 0000
     
     
 # [進入容器] winpty docker exec -it spring-redis //bin/bash
   spring-redis:   
     container_name: spring-redis      
-    restart: always            
+#    restart: always
     image: redis:latest
     ports:
-      - 6379:6379
+      - "6379:6379"
     volumes:
       - /c/Users/alanhuang/eclipse-workspace/service-telemedicine-backend-chat/src/main/resources/redis/conf/:/usr/local/etc/redis/conf
     command: ["redis-server","/usr/local/etc/redis/conf/redis.conf"]
     
     
-#  openfire-mysql:
-#    container_name: openfire-mysql
-#    image: mysql/mysql-server:latest
-#    ports:
-#      - "3306:3306"
-#    environment:
-#      MYSQL_DATABASE: openfire
-#      MYSQL_USER: openfireuser
-#      MYSQL_PASSWORD: openfirepasswd
-#      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
-#      
-#  openfire:
-#    container_name: openfire
-#    image: quantumobject/docker-openfire
-#    ports:
-#      - "9090:9090"
-#      - "5222:5222"
-#      - "5269:5269"
-#      - "5223:5223"
-#      - "7443:7443"
-#      - "7777:7777"
-#      - "7070:7070"
-#      - "5229:5229"
-#      - "5275:5275"
-#    depends_on:
-#      - openfire-mysql
+  openfire-mysql:
+    container_name: openfire-mysql
+#    restart: always
+    image: mysql:latest
+    ports:
+      - "3307:3307"
+    expose:
+      - 3307
+    environment:
+      MYSQL_DATABASE: openfire
+      MYSQL_USER: openfireuser
+      MYSQL_PASSWORD: openfirepasswd
+      MYSQL_TCP_PORT: 3307
+
+
+# windows 利用 netstat -a 看看port是否有被佔用
+  openfire:
+    container_name: openfire
+#    restart: always
+    image: quantumobject/docker-openfire
+    ports:
+      - "9090:9090"
+      - "5222:5222"
+      - "5269:5269"
+      - "5223:5223"
+      - "7443:7443"
+      - "7777:7777"
+      - "7070:7070"
+      - "5229:5229"
+      - "5275:5275"
+    links:
+      - openfire-mysql
+    depends_on:
+      - openfire-mysql
+ 

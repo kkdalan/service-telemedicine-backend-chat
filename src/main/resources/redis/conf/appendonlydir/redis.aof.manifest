@@ -1,2 +1,2 @@
-file redis.aof.2.base.rdb seq 2 type b
-file redis.aof.2.incr.aof seq 2 type i
+file redis.aof.1.base.rdb seq 1 type b
+file redis.aof.1.incr.aof seq 1 type i

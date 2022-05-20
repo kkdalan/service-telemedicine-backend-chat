@@ -1,0 +1,22 @@
+# 配置AOF redis.conf
+appendonly yes
+appendfilename redis.aof
+appendfsync everysec
+dir /usr/local/etc/redis/conf/
+
+# 下面這兩個是另外一種配置措施，一般都不考慮
+# appendfsync always
+# # appendfsync no
+
+
+# 手動驅動 AOF重寫:
+# 127.0.0.1:6379> bgrewriteaof
+# Background append only file rewriting started
+
+# 修復 AOF文件
+# root@7a036f39e352:/data# redis-check-aof --fix /usr/local/etc/redis/conf/appendonlydir/redis.aof.2.incr.aof
+# Start checking Old-Style AOF
+# AOF analyzed: filename=/usr/local/etc/redis/conf/appendonlydir/redis.aof.2.incr.aof, size=85, ok_up_to=85, ok_up_to_line=20, diff=0
+# AOF /usr/local/etc/redis/conf/appendonlydir/redis.aof.2.incr.aof is valid
+
+
