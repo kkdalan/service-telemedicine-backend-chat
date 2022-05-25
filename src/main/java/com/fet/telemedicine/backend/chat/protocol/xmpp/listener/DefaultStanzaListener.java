@@ -1,4 +1,4 @@
-package com.fet.telemedicine.backend.chat.message.listener;
+package com.fet.telemedicine.backend.chat.protocol.xmpp.listener;
 
 import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.SmackException.NotLoggedInException;

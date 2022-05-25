@@ -43,10 +43,10 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.stereotype.Component;
 
 import com.fet.telemedicine.backend.chat.exception.MessengerException;
-import com.fet.telemedicine.backend.chat.message.listener.DefaultPresenceEventListener;
-import com.fet.telemedicine.backend.chat.message.listener.DefaultRosterListener;
-import com.fet.telemedicine.backend.chat.message.listener.DefaultRosterLoadedListener;
-import com.fet.telemedicine.backend.chat.message.listener.DefaultSubscribeListener;
+import com.fet.telemedicine.backend.chat.protocol.xmpp.listener.DefaultPresenceEventListener;
+import com.fet.telemedicine.backend.chat.protocol.xmpp.listener.DefaultRosterListener;
+import com.fet.telemedicine.backend.chat.protocol.xmpp.listener.DefaultRosterLoadedListener;
+import com.fet.telemedicine.backend.chat.protocol.xmpp.listener.DefaultSubscribeListener;
 import com.fet.telemedicine.backend.chat.util.XMPPUtil;
 
 @Component

@@ -1,4 +1,4 @@
-package com.fet.telemedicine.backend.chat.message.listener;
+package com.fet.telemedicine.backend.chat.protocol.xmpp.listener;
 
 import java.util.Collection;
 

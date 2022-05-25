@@ -38,7 +38,7 @@ services:
     
   openfire-mysql:
     container_name: openfire-mysql
-#    restart: always
+    restart: always
     image: mysql:latest
     ports:
       - "3307:3307"

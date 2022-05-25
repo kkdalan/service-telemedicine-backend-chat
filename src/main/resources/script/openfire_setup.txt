@@ -5,6 +5,8 @@
 --< setup >----------------------------------------------
 參考網址:
 https://www.796t.com/p/1121218.html
+插件安裝
+https://intone.cc/2018/10/openfire-rest-api-%E6%8F%92%E4%BB%B6%E5%AE%89%E8%A3%9D/
 
 *** openfire setup連結 ***
   
@@ -39,4 +41,6 @@ https://www.796t.com/p/1121218.html
 6. Setup Complete!
 
 7. create 4 users for openfire (optional) 
+
+
 
