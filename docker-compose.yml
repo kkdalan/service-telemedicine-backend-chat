@@ -2,6 +2,16 @@ services:
 
 ## [進入容器] winpty docker exec -it <CONTAINER_NAME> //bin/bash
 
+  spring-postgres:
+    container_name: spring-postgres
+#    restart: always
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      
   spring-mysql:
     container_name: spring-mysql
 #    restart: always
