@@ -20,15 +20,15 @@ public class OpenfireRestAPIDemo {
 
 	testUserRelatedExamples();
 
-	testChatRoomsRelatedExamples();
-
-	testSessionRelatedExamples();
-
-	testSystemRelatedExamples();
-
-	testGroupRelatedExamples();
-	
-	testRosterRelatedExamples();
+//	testChatRoomsRelatedExamples();
+//
+//	testSessionRelatedExamples();
+//
+//	testSystemRelatedExamples();
+//
+//	testGroupRelatedExamples();
+//	
+//	testRosterRelatedExamples();
 
     }
 
@@ -166,11 +166,11 @@ public class OpenfireRestAPIDemo {
 	// Set Shared secret key
 	AuthenticationToken authenticationToken = new AuthenticationToken("admin", "admin");
 	// Set Openfire settings (9090 is the port of Openfire Admin Console)
-	RestApiClient restApiClient = new RestApiClient("http://localhost", 9090, authenticationToken);
+	RestApiClient restApiClient = new RestApiClient("localhost", 9090, authenticationToken);
 
 	// Request all available users
 	UserEntities users = restApiClient.getUsers();
-	System.out.println(String.format("Available users count = '%d' ", users.getUsers().size()));
+	System.out.println(String.format("Available users count = %d ", users.getUsers().size()));
 
 	// Get specific user by username
 	UserEntity user = restApiClient.getUser("alan");
@@ -182,7 +182,7 @@ public class OpenfireRestAPIDemo {
 	HashMap<String, String> querys = new HashMap<String, String>();
 	querys.put("search", "alan");
 	users = restApiClient.getUsers(querys);
-	System.out.println(String.format("Search users, found = '%d' ", users.getUsers().size()));
+	System.out.println(String.format("Search users, found = %d ", users.getUsers().size()));
 
 	// Create a new user (username, name, email, password). There are more user
 	// settings available.
